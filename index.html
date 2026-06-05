@@ -745,7 +745,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
     <div style="background:var(--acc-bg);border:1px solid rgba(44,82,130,.15);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px">
       <span style="font-size:20px">✨</span>
       <div style="display:flex;flex-direction:column;gap:4px">
-        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.0</div>
+        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.1</div>
         <div style="font-size:12px;color:var(--txt3)">HL 전용 독서 기록 앱</div>
         <div style="font-size:12px;font-weight:700;color:#b04040;background:#fdf0f0;border:1px solid rgba(176,64,64,.2);border-radius:5px;padding:4px 8px;margin-top:2px">⚠️ HL 외 BL&GL 장르로 사용하지 마세요. 발견 즉시 폐쇄합니다.</div>
       </div>
@@ -833,8 +833,24 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
       <div class="help-log-acc" id="helpLogAcc">
         <div class="hla-item">
           <div class="hla-head" onclick="toggleHla(this)">
+            <span class="help-log-ver">v1.1</span>
+            <span class="hla-summary">현재 버전 — 남주/여주 유형 태그화, 소재/관계 태그 분리</span>
+            <span class="hla-arrow">▶</span>
+          </div>
+          <div class="hla-body">
+            <ul class="hla-list">
+              <li>남주 유형 → 태그 입력 방식으로 변경 (#연하남, #집착남 등)</li>
+              <li>여주 유형 → 태그 입력 방식으로 변경 (#츤데레녀, #악녀 등)</li>
+              <li>커플링 태그를 소재 태그 / 관계 태그로 분리</li>
+              <li>남주·여주 소개란 추가</li>
+              <li>상세보기에서 소재/관계 태그 구분 표시, 유형 태그 칩으로 표시</li>
+            </ul>
+          </div>
+        </div>
+        <div class="hla-item">
+          <div class="hla-head" onclick="toggleHla(this)">
             <span class="help-log-ver">v1.0</span>
-            <span class="hla-summary">현재 버전 — HL 전용 독서 기록 앱 완성</span>
+            <span class="hla-summary">최초 출시 — HL 전용 독서 기록 앱 완성</span>
             <span class="hla-arrow">▶</span>
           </div>
           <div class="hla-body">
