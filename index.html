@@ -1090,7 +1090,15 @@ function renderMlAcc() {
     existingTypes.forEach(function(tag){ _renderMlTypeTag(m.id, tag, typeTagsWrap); });
     const introWrap = document.createElement('div');
     introWrap.className = 'fg';
-    introWrap.innerHTML = `<label>소개</label><textarea rows="2" style="resize:vertical;min-height:54px" oninput="syncMl('${m.id}','intro',this.value)">${m.intro||''}</textarea>`;
+    const introLabel = document.createElement('label');
+    introLabel.textContent = '소개';
+    const introTa = document.createElement('textarea');
+    introTa.rows = 2;
+    introTa.style.cssText = 'resize:vertical;min-height:54px';
+    introTa.value = m.intro || '';
+    introTa.oninput = (function(mid){ return function(){ syncMl(mid,'intro',this.value); }; })(m.id);
+    introWrap.appendChild(introLabel);
+    introWrap.appendChild(introTa);
     bodyInner.appendChild(checkRow);
     bodyInner.appendChild(fields);
     bodyInner.appendChild(typeWrap);
