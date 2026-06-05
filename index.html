@@ -189,8 +189,8 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .add-genre-row input::placeholder{color:var(--txt4)}
 .color-picker{width:34px;height:34px;border-radius:7px;cursor:pointer;padding:2px;background:var(--bg);border:1px solid var(--line)}
 /* DETAIL */
-.detail-modal{max-width:860px;max-height:90vh}
-.detail-top{display:grid;grid-template-columns:170px 1fr}
+.detail-modal{max-width:860px;max-height:90vh;display:flex;flex-direction:column}
+.detail-top{display:grid;grid-template-columns:170px 1fr;flex-shrink:0;border-bottom:1px solid var(--line)}
 .det-cover{background:var(--bg2);border-right:1px solid var(--line)}
 .det-cover img{width:100%;height:100%;object-fit:cover;display:block}
 .det-cover-ph{width:100%;height:100%;min-height:220px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--txt4);padding:20px}
@@ -208,7 +208,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .det-dates{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--txt3)}
 .det-date-item{display:flex;align-items:center;gap:4px}
 .det-actions{display:flex;gap:8px;margin-top:auto;padding-top:8px;flex-wrap:wrap}
-.det-content{padding:20px;display:flex;flex-direction:column;gap:18px;overflow-y:auto}
+.det-content{padding:20px;display:flex;flex-direction:column;gap:18px;overflow-y:auto;flex:1;min-height:0}
 .det-section h3{font-size:11px;font-weight:600;color:var(--txt4);letter-spacing:.08em;text-transform:uppercase;padding-bottom:7px;border-bottom:1px solid var(--line);margin-bottom:10px}
 .det-section p{font-size:13px;color:var(--txt2);line-height:1.85}
 .exc-quote-block{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:8px}
@@ -334,7 +334,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .lead-detail-label.fl{color:var(--rose)}
 .lead-detail-row{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--txt2)}
 .lead-detail-row span{color:var(--txt3)}
-/* GOAL *//* GOAL */
+/* GOAL */
 .goal-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
 .goal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .goal-title{font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em}
@@ -569,15 +569,25 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
           <div class="fg"><label>구매 플랫폼</label><input type="text" id="f-platform" placeholder="리디, 카카오페이지, 밀리의 서재 ..."></div>
           <div class="fg"><label>금액 (원)</label><input type="number" id="f-price" placeholder="0" min="0"></div>
         </div>
-        <!-- COUPLING TAGS -->
+        <!-- COUPLING TAGS: 소재 / 관계 -->
         <div class="fg">
-          <label>커플링 태그</label>
+          <label>소재 태그</label>
           <div class="ctag-wrap">
             <div class="ctag-input-row">
-              <input type="text" id="ctagInput" placeholder="#계약결혼, #소꿉친구, #혐관 ..." onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFromInput();}">
-              <button class="ctag-add-btn" onclick="addCtagFromInput()">+ 추가</button>
+              <input type="text" id="ctagInputSojai" placeholder="#계약결혼, #환생, #이세계 ..." onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFromInputSojai();}">
+              <button class="ctag-add-btn" onclick="addCtagFromInputSojai()">+ 추가</button>
             </div>
-            <div class="selected-tags" id="selectedTags"></div>
+            <div class="selected-tags" id="selectedTagsSojai"></div>
+          </div>
+        </div>
+        <div class="fg">
+          <label>관계 태그</label>
+          <div class="ctag-wrap">
+            <div class="ctag-input-row">
+              <input type="text" id="ctagInputRel" placeholder="#소꿉친구, #혐관, #집착남 ..." onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFromInputRel();}">
+              <button class="ctag-add-btn" onclick="addCtagFromInputRel()">+ 추가</button>
+            </div>
+            <div class="selected-tags" id="selectedTagsRel"></div>
           </div>
         </div>
         <!-- LEAD / HEROINE -->
@@ -595,6 +605,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
               <div class="fg"><label>나이</label><input type="text" id="f-fl-age"></div>
               <div class="fg"><label>유형</label><input type="text" id="f-fl-type" placeholder="#츤데레녀, #악녀 ..."></div>
             </div>
+            <div class="fg" style="margin-top:6px"><label>소개</label><textarea id="f-fl-intro" rows="2" style="resize:vertical;min-height:54px"></textarea></div>
           </div>
         </div>
         <div class="fg"><label>독서 상태</label>
@@ -741,21 +752,21 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
           <div class="help-card-icon">📚</div>
           <div class="help-card-body">
             <div class="help-card-title">책 추가 / 수정</div>
-            <div class="help-card-desc">표지 이미지, 장르, 책 종류, 이용가 등급, 구매 플랫폼·금액, 커플링 태그, 남주·여주 정보, 줄거리, 총평, 별점, 발췌 무한 추가</div>
+            <div class="help-card-desc">표지 이미지, 장르, 책 종류, 이용가 등급, 구매 플랫폼·금액, 소재/관계 태그, 남주·여주 정보, 줄거리, 총평, 별점, 발췌 무한 추가</div>
           </div>
         </div>
         <div class="help-card">
           <div class="help-card-icon">🏷</div>
           <div class="help-card-body">
-            <div class="help-card-title">커플링 태그</div>
-            <div class="help-card-desc">#계약결혼 #소꿉친구 #혐관 등 직접 입력 후 Enter. 카드와 상세보기에 핑크 칩으로 표시되고 검색도 됨</div>
+            <div class="help-card-title">소재 / 관계 태그</div>
+            <div class="help-card-desc">소재(#계약결혼 #환생)와 관계(#소꿉친구 #혐관)를 분리해서 입력. 상세보기에서 구분되어 표시</div>
           </div>
         </div>
         <div class="help-card">
           <div class="help-card-icon">💙🩷</div>
           <div class="help-card-body">
             <div class="help-card-title">남주 / 여주 정보</div>
-            <div class="help-card-desc">이름·나이·유형 각각 입력. 상세보기에서 카드 형태로 표시</div>
+            <div class="help-card-desc">이름·나이·유형·소개 각각 입력. 상세보기에서 카드 형태로 표시</div>
           </div>
         </div>
         <div class="help-card">
@@ -823,7 +834,8 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
             <ul class="hla-list">
               <li>책 추가·수정·삭제, 표지 이미지 업로드·변경·삭제</li>
               <li>장르 직접 추가·삭제 / 독서 상태 구분 (완독·읽는중·읽고싶어요)</li>
-              <li>커플링 태그 직접 입력 / 남주·여주 정보 (이름·나이·유형)</li>
+              <li>소재 태그 / 관계 태그 분리 입력</li>
+              <li>남주·여주 정보 (이름·나이·유형·소개)</li>
               <li>이용가 등급 뱃지 (전체·15세·19세🔞)</li>
               <li>별점 / 줄거리 / 총평 / 발췌 무한 추가 (아코디언)</li>
               <li>책 종류·구매 플랫폼·금액·날짜 3종 (구매·시작·완독)</li>
@@ -889,7 +901,7 @@ const DEFAULT_GENRES = [
 ];
 let books      = JSON.parse(localStorage.getItem('myLib_books')    || '[]');
 let genres     = JSON.parse(localStorage.getItem('myLib_genres')   || JSON.stringify(DEFAULT_GENRES));
-let userGenres = JSON.parse(localStorage.getItem('myLib_userGenres') || '[]'); // user-added genre names
+let userGenres = JSON.parse(localStorage.getItem('myLib_userGenres') || '[]');
 let currentFilter = '전체', currentStatusFilter = '';
 let editId = null, currentCover = null, currentStar = 0, currentStatusVal = '완독';
 let excerptsData = [], currentShareId = null, shareTheme = 'cream';
@@ -923,33 +935,54 @@ function toggleFavFilter() {
   render();
 }
 
-// ── COUPLING TAGS ──
-let currentCtags = [];
+// ── COUPLING TAGS (소재 / 관계 분리) ──
+let currentCtags = [];       // legacy
+let currentCtagsSojai = [];  // 소재 태그
+let currentCtagsRel   = [];  // 관계 태그
 let currentGenreTags = [];
-let mlData = []; // [{id,name,age,type,open}]
+let mlData = [];
 
-function renderSelectedTags() {
-  const wrap = document.getElementById('selectedTags');
+function renderSelectedTags() { /* legacy no-op */ }
+
+function _renderTagsToWrap(arr, wrapId, removeFn) {
+  const wrap = document.getElementById(wrapId);
   if (!wrap) return;
   wrap.innerHTML = '';
-  currentCtags.forEach(function(tag) {
+  arr.forEach(function(tag) {
     const span = document.createElement('span');
     span.className = 'stag';
     const txt = document.createTextNode(tag + ' ');
     const del = document.createElement('button');
     del.className = 'stag-del';
     del.textContent = '✕';
-    del.onclick = (function(t){ return function(){ removeCtag(t); }; })(tag);
+    del.onclick = (function(t){ return function(){ removeFn(t); }; })(tag);
     span.appendChild(txt);
     span.appendChild(del);
     wrap.appendChild(span);
   });
 }
-
+function renderTagsSojai() { _renderTagsToWrap(currentCtagsSojai, 'selectedTagsSojai', removeCtagSojai); }
+function renderTagsRel()   { _renderTagsToWrap(currentCtagsRel,   'selectedTagsRel',   removeCtagRel);   }
+function removeCtagSojai(tag) { currentCtagsSojai = currentCtagsSojai.filter(t=>t!==tag); renderTagsSojai(); }
+function removeCtagRel(tag)   { currentCtagsRel   = currentCtagsRel.filter(t=>t!==tag);   renderTagsRel();   }
+function addCtagFromInputSojai() {
+  const input = document.getElementById('ctagInputSojai'); if(!input) return;
+  let val = input.value.trim(); if(!val) return;
+  if(!val.startsWith('#')) val='#'+val;
+  if(!currentCtagsSojai.includes(val)) { currentCtagsSojai.push(val); renderTagsSojai(); }
+  input.value='';
+}
+function addCtagFromInputRel() {
+  const input = document.getElementById('ctagInputRel'); if(!input) return;
+  let val = input.value.trim(); if(!val) return;
+  if(!val.startsWith('#')) val='#'+val;
+  if(!currentCtagsRel.includes(val)) { currentCtagsRel.push(val); renderTagsRel(); }
+  input.value='';
+}
 
 // ── MALE LEAD ACCORDION ──
 function addMlEntry() {
-  mlData.push({id: uid(), name:'', age:'', type:'', open:true});
+  mlData.push({id: uid(), name:'', age:'', type:'', intro:'', open:true});
   renderMlAcc();
   setTimeout(() => document.getElementById('mlAccWrap').lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
 }
@@ -966,7 +999,6 @@ function renderMlAcc() {
     const summary = m.name || '(이름 없음)';
     const item = document.createElement('div');
     item.className = 'ml-acc-item';
-    // HEAD
     const head = document.createElement('div');
     head.className = 'ml-acc-head';
     head.onclick = () => toggleMlEntry(m.id);
@@ -984,46 +1016,29 @@ function renderMlAcc() {
     del.textContent = '✕';
     del.onclick = (e) => { e.stopPropagation(); removeMlEntry(m.id); };
     head.appendChild(arrow); head.appendChild(lbl); head.appendChild(smry); head.appendChild(del);
-    // BODY
     const body = document.createElement('div');
     body.className = 'ml-acc-body' + (m.open?' open':'');
     const bodyInner = document.createElement('div');
     bodyInner.style.cssText = 'display:flex;flex-direction:column;gap:8px';
-    // sub checkbox row
     const checkRow = document.createElement('label');
     checkRow.className = 'ml-sub-check-row';
     checkRow.innerHTML = `<input type="checkbox" ${isSub?'checked':''} onchange="syncMl('${m.id}','sub',this.checked);renderMlAcc()"> <span>서브남</span>`;
-    // fields
     const fields = document.createElement('div');
     fields.className = 'row3';
     fields.innerHTML = `
       <div class="fg"><label>이름</label><input type="text" value="${m.name||''}" oninput="syncMl('${m.id}','name',this.value)"></div>
       <div class="fg"><label>나이</label><input type="text" value="${m.age||''}" oninput="syncMl('${m.id}','age',this.value)"></div>
       <div class="fg"><label>유형</label><input type="text" value="${m.type||''}" placeholder="#연하남, #집착남 ..." oninput="syncMl('${m.id}','type',this.value)"></div>`;
+    const introWrap = document.createElement('div');
+    introWrap.className = 'fg';
+    introWrap.innerHTML = `<label>소개</label><textarea rows="2" style="resize:vertical;min-height:54px" oninput="syncMl('${m.id}','intro',this.value)">${m.intro||''}</textarea>`;
     bodyInner.appendChild(checkRow);
     bodyInner.appendChild(fields);
+    bodyInner.appendChild(introWrap);
     body.appendChild(bodyInner);
     item.appendChild(head); item.appendChild(body);
     wrap.appendChild(item);
   });
-}
-
-function removeCtag(tag) {
-  currentCtags = currentCtags.filter(t => t !== tag);
-  renderSelectedTags();
-}
-
-function addCtagFromInput() {
-  const input = document.getElementById('ctagInput');
-  if (!input) return;
-  let val = input.value.trim();
-  if (!val) return;
-  if (!val.startsWith('#')) val = '#' + val;
-  if (!currentCtags.includes(val)) {
-    currentCtags.push(val);
-      renderSelectedTags();
-  }
-  input.value = '';
 }
 
 function saveData() {
@@ -1068,7 +1083,8 @@ function getSortedFiltered() {
     const sm = !currentStatusFilter || b.status === currentStatusFilter;
     const fm = !showFavOnly || !!b.fav;
     const bGenreArr = Array.isArray(b.genre) ? b.genre : (b.genre ? [b.genre] : []);
-    const qm = !q || [b.title, b.author, ...bGenreArr, ...(b.tags||[]), ...(b.themes||[])].join(' ').toLowerCase().includes(q);
+    const allTags = [...(b.sojaiTags||b.tags||[]), ...(b.relTags||b.themes||[])];
+    const qm = !q || [b.title, b.author, ...bGenreArr, ...allTags].join(' ').toLowerCase().includes(q);
     return gm && sm && fm && qm;
   });
   if (sort === 'newest')       list.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -1083,7 +1099,7 @@ function renderCard(b) {
   const g = getGenre(gKey);
   const sb = b.status ? ({완독:'<span class="status-badge sb-완독">✅ 완독</span>',읽는중:'<span class="status-badge sb-읽는중">📖 읽는중</span>',읽고싶어요:'<span class="status-badge sb-읽고싶어요">🔖 읽고싶어요</span>'}[b.status]||'') : '';
   const ageBadge = b.agerating ? `<span class="age-badge age-${b.agerating}">${b.agerating}</span>` : '';
-  const allTags = [...(b.tags||[]), ...(b.themes||[])];
+  const allTags = [...(b.sojaiTags||b.tags||[]), ...(b.relTags||b.themes||[])];
   const tags = allTags.slice(0,3).map(t => `<span class="ctag">${t}</span>`).join('');
   const dot = `<span class="genre-dot" style="background:${hexToRgba(g.color,.13)};color:${g.color}">${g.name}</span>`;
   const isFav = b.fav ? ' on' : '';
@@ -1104,29 +1120,23 @@ function render() {
     grid.innerHTML = '<div class="empty"><div class="empty-ico">📚</div><p>등록된 책이 없어요.</p></div>';
     return;
   }
-  // Pinned favs section (only when no fav filter active & no other filter)
   const favBooks = !showFavOnly && currentFilter==='전체' && !currentStatusFilter && !document.getElementById('searchInput')?.value
     ? books.filter(b => b.fav) : [];
-  // Render pinned favs at top
   if (favBooks.length) {
     const favCards = favBooks.map(b => renderCard(b)).join('');
     grid.innerHTML = `<div class="fav-section" style="grid-column:1/-1"><div class="fav-section-title">⭐ 즐겨찾기 <span style="font-size:10px;color:var(--txt4)">${favBooks.length}권</span></div><div class="grid" style="margin:0">${favCards}</div></div>`;
   } else {
     grid.innerHTML = '';
   }
-
   const favIds = new Set(favBooks.map(b => b.id));
   const remaining = favBooks.length ? filtered.filter(b => !favIds.has(b.id)) : filtered;
   const html = remaining.map(b => renderCard(b)).join('');
   if (html) grid.insertAdjacentHTML('beforeend', html);
 }
 function renderGenrePills() {
-  // Merge user-saved genres + genres from books
   const seen = new Set();
   const allGenres = [];
-  // user-persisted genres first
   userGenres.forEach(g => { if (!seen.has(g)) { seen.add(g); allGenres.push(g); } });
-  // then from books
   books.forEach(b => {
     const gs = Array.isArray(b.genre) ? b.genre : (b.genre ? [b.genre] : []);
     gs.forEach(g => { if (g && !seen.has(g)) { seen.add(g); allGenres.push(g); } });
@@ -1155,29 +1165,19 @@ function renderStats() {
   const wish    = books.filter(b => b.status === '읽고싶어요').length;
   const rated   = books.filter(b => b.rating > 0);
   const avg     = rated.length ? (rated.reduce((s,b) => s+b.rating,0)/rated.length).toFixed(1) : '-';
-  // price
   const totalPrice = books.reduce((s,b) => s + (Number(b.price)||0), 0);
-  // avg reading days
   const daysArr = books.filter(b => b.datestart && b.dateend).map(b => daysBetween(b.datestart, b.dateend)).filter(d => d > 0);
   const avgDays = daysArr.length ? Math.round(daysArr.reduce((a,b)=>a+b,0)/daysArr.length) : null;
-
-  // genre
   const genreMap = {};
   books.forEach(b => { const gs = Array.isArray(b.genre) ? b.genre : (b.genre?[b.genre]:[]); gs.forEach(g => { genreMap[g] = (genreMap[g]||0)+1; }); });
   const genreEntries = Object.entries(genreMap).sort((a,b)=>b[1]-a[1]);
   const maxG = genreEntries[0]?.[1] || 1;
-
-  // platform
   const platMap = {};
   books.forEach(b => { if (b.platform) platMap[b.platform] = (platMap[b.platform]||0)+1; });
   const platEntries = Object.entries(platMap).sort((a,b)=>b[1]-a[1]);
   const maxP = platEntries[0]?.[1] || 1;
-
-  // star dist
   const starMap = {1:0,2:0,3:0,4:0,5:0};
   books.forEach(b => { if (b.rating > 0) starMap[b.rating]++; });
-
-  // monthly
   const year = new Date().getFullYear();
   const monthMap = Array(12).fill(0);
   const monthBooks = Array(12).fill(null).map(()=>[]);
@@ -1190,26 +1190,21 @@ function renderStats() {
   });
   const maxM = Math.max(...monthMap, 1);
   const MN = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-
   const monthBars = monthMap.map((n,i) => {
     const tipTitles = monthBooks[i].slice(0,3).join(', ') + (monthBooks[i].length>3?'…':'');
     const tip = n ? `${MN[i]}: ${n}권${tipTitles?(' ('+tipTitles+')'):''}` : MN[i];
     return `<div class="month-col"><div class="month-num-label">${n||''}</div><div class="month-bar-wrap"><div class="month-bar" style="height:${Math.round(n/maxM*88)+2}px;opacity:${n?1:.12}" data-tip="${tip}"></div></div></div>`;
   }).join('');
-
   const genreBars = genreEntries.map(([id,cnt]) => {
     const g = getGenre(id);
     return `<div class="bar-row"><span class="bar-label">${g.name}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxG*100)}%;background:${g.color}"></div></div><span class="bar-count">${cnt}</span></div>`;
   }).join('');
-
   const platBars = platEntries.map(([plat,cnt]) =>
     `<div class="bar-row"><span class="bar-label">${plat}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxP*100)}%;background:var(--acc)"></div></div><span class="bar-count">${cnt}</span></div>`
   ).join('') || '<p style="font-size:12px;color:var(--txt4)">플랫폼 데이터 없음</p>';
-
   const starBars = [5,4,3,2,1].map(n =>
     `<div class="star-dist-row"><span class="star-dist-label">${'★'.repeat(n)}</span><div class="bar-track"><div class="bar-fill" style="width:${rated.length?Math.round(starMap[n]/rated.length*100):0}%;background:#e8a020"></div></div><span class="bar-count">${starMap[n]}</span></div>`
   ).join('');
-
   el.innerHTML = `
     <div class="stats-top-grid">
       <div class="stat-card"><div class="stat-label">전체</div><div class="stat-value">${books.length}</div><div class="stat-sub">권</div></div>
@@ -1234,7 +1229,7 @@ function renderStats() {
 
 // ── CALENDAR ──
 let calYear = new Date().getFullYear();
-let calMonth = new Date().getMonth(); // 0-based
+let calMonth = new Date().getMonth();
 
 function calPrevMonth() {
   calMonth--;
@@ -1255,7 +1250,6 @@ function renderCalendar() {
   const MN = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
   const DOW = ['일','월','화','수','목','금','토'];
   document.getElementById('calNavTitle').textContent = calYear + '년 ' + MN[calMonth];
-
   const doneBooks = books.filter(b => b.dateend && b.status === '완독');
   const byDate = {};
   doneBooks.forEach(b => {
@@ -1263,15 +1257,10 @@ function renderCalendar() {
     if (!byDate[k]) byDate[k] = [];
     byDate[k].push({title: b.title, id: b.id});
   });
-
   const today = new Date().toISOString().slice(0,10);
   const firstDay = new Date(calYear, calMonth, 1).getDay();
   const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
-
-  // Header
   document.getElementById('calDaysHeader').innerHTML = DOW.map(d => `<div class="cal-day-hdr">${d}</div>`).join('');
-
-  // Days
   let cells = '';
   for (let i = 0; i < firstDay; i++) cells += '<div class="cal-day cal-empty"></div>';
   for (let d = 1; d <= daysInMonth; d++) {
@@ -1290,8 +1279,6 @@ function renderCalendar() {
     }
   }
   document.getElementById('calDays').innerHTML = cells;
-
-  // This month's book list
   const monthKey = `${calYear}-${String(calMonth+1).padStart(2,'0')}`;
   const monthEntries = doneBooks
     .filter(b => b.dateend.startsWith(monthKey))
@@ -1340,7 +1327,6 @@ function addGenreTag() {
   const val = input.value.trim();
   if (!val) return;
   if (!currentGenreTags.includes(val)) { currentGenreTags.push(val); renderGenreTags(); }
-  // persist to global userGenres if new
   if (!userGenres.includes(val)) { userGenres.push(val); saveData(); }
   input.value = '';
 }
@@ -1348,13 +1334,15 @@ function removeGenreTag(tag) {
   currentGenreTags = currentGenreTags.filter(t => t !== tag);
   renderGenreTags();
 }
+
 function openAdd() {
   editId = null; currentCover = null; currentStar = 0; currentStatusVal = '완독'; excerptsData = [];
-  currentCtags = []; mlData = [];
+  currentCtags = []; currentCtagsSojai = []; currentCtagsRel = []; mlData = [];
   document.getElementById('editModalTitle').textContent = '책 추가';
   document.getElementById('delBtn').style.display = 'none';
   clearForm(); renderGenreTags(); renderExcerpts(); updateStatusUI();
-  renderSelectedTags();   document.getElementById('editOv').classList.add('open');
+  renderTagsSojai(); renderTagsRel();
+  document.getElementById('editOv').classList.add('open');
 }
 function openEdit(id) {
   const b = books.find(x => x.id === id); if (!b) return;
@@ -1364,16 +1352,19 @@ function openEdit(id) {
   document.getElementById('delBtn').style.display = 'block';
   document.getElementById('f-title').value   = b.title  || '';
   document.getElementById('f-author').value  = b.author || '';
-  // coupling tags
-  currentCtags = [...(b.tags||[]), ...(b.themes||[])];
-  renderSelectedTags();
+  // coupling tags (소재 / 관계 분리)
+  currentCtagsSojai = b.sojaiTags ? [...b.sojaiTags] : [...(b.tags||[]), ...(b.themes||[])];
+  currentCtagsRel   = b.relTags   ? [...b.relTags]   : [];
+  currentCtags = [];
+  renderTagsSojai(); renderTagsRel();
   // lead/heroine
   mlData = Array.isArray(b.ml) ? b.ml.map(m=>({...m,open:false})) : (b.ml&&b.ml.name ? [{...b.ml,open:false}] : []);
   renderMlAcc();
   const fl = b.fl||{};
-  document.getElementById('f-fl-name').value = fl.name||'';
-  document.getElementById('f-fl-age').value  = fl.age||'';
-  document.getElementById('f-fl-type').value = fl.type||'';
+  document.getElementById('f-fl-name').value  = fl.name||'';
+  document.getElementById('f-fl-age').value   = fl.age||'';
+  document.getElementById('f-fl-type').value  = fl.type||'';
+  document.getElementById('f-fl-intro').value = fl.intro||'';
   document.getElementById('f-summary').value = b.summary || '';
   document.getElementById('f-review').value  = b.review  || '';
   document.getElementById('f-booktype').value  = b.booktype  || '';
@@ -1393,16 +1384,16 @@ function openEdit(id) {
 }
 function clearForm() {
   ['f-title','f-author','f-summary','f-review','f-platform','f-price','f-datebuy','f-datestart','f-dateend',
-   'f-fl-name','f-fl-age','f-fl-type']
-    .forEach(id => document.getElementById(id).value = '');
+   'f-fl-name','f-fl-age','f-fl-type','f-fl-intro']
+    .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   currentGenreTags = []; renderGenreTags();
   mlData = [];
   renderMlAcc();
   document.getElementById('f-booktype').value  = '';
   document.getElementById('f-agerating').value = '';
   document.getElementById('coverBox').innerHTML = '<div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>';
-  currentCtags = [];
-  renderSelectedTags();
+  currentCtags = []; currentCtagsSojai = []; currentCtagsRel = [];
+  renderTagsSojai(); renderTagsRel();
   updateStarUI();
 }
 function closeEdit() { document.getElementById('editOv').classList.remove('open'); }
@@ -1458,8 +1449,11 @@ function renderExcerpts() {
 function saveBook() {
   const title = document.getElementById('f-title').value.trim();
   if (!title) { showToast('제목을 입력해주세요.'); return; }
-  const tags   = currentCtags.filter(t => t.startsWith('#'));
-  const themes = currentCtags.filter(t => !t.startsWith('#'));
+  const sojaiTags = [...currentCtagsSojai];
+  const relTags   = [...currentCtagsRel];
+  // legacy compat
+  const tags   = sojaiTags;
+  const themes = [];
   const clean = excerptsData.filter(e=>e.text.trim()).map(({id,text,location,reason})=>({id,text:text.trim(),location:location.trim(),reason:reason.trim()}));
   const bookData = {
     id: editId||uid(), title,
@@ -1469,12 +1463,12 @@ function saveBook() {
     agerating: document.getElementById('f-agerating').value,
     platform: document.getElementById('f-platform').value.trim(),
     price:    Number(document.getElementById('f-price').value) || 0,
-    status:   currentStatusVal, themes, tags, rating: currentStar,
+    status:   currentStatusVal, themes, tags, sojaiTags, relTags, rating: currentStar,
     summary:  document.getElementById('f-summary').value.trim(),
     review:   document.getElementById('f-review').value.trim(),
     excerpts: clean, cover: currentCover,
-    ml: mlData.filter(m=>m.name||m.age||m.type).map(({name,age,type})=>({name:name||'',age:age||'',type:type||''})),
-    fl: { name: document.getElementById('f-fl-name').value.trim(), age: document.getElementById('f-fl-age').value.trim(), type: document.getElementById('f-fl-type').value.trim() },
+    ml: mlData.filter(m=>m.name||m.age||m.type||m.intro).map(({name,age,type,intro,sub})=>({name:name||'',age:age||'',type:type||'',intro:intro||'',sub:!!sub})),
+    fl: { name: document.getElementById('f-fl-name').value.trim(), age: document.getElementById('f-fl-age').value.trim(), type: document.getElementById('f-fl-type').value.trim(), intro: document.getElementById('f-fl-intro').value.trim() },
     datebuy:  document.getElementById('f-datebuy').value,
     datestart:document.getElementById('f-datestart').value,
     dateend:  document.getElementById('f-dateend').value,
@@ -1513,20 +1507,25 @@ function openDetail(id) {
   const statusHTML = b.status ? `<span class="det-status-badge" style="${STATUS_STYLE[b.status]||''}">${STATUS_LABEL[b.status]||b.status}</span>` : '';
   const typeHTML   = b.booktype ? `<span class="det-type-badge" style="background:var(--bg2);border:1px solid var(--line);color:var(--txt2)">${b.booktype}</span>` : '';
   const coverHTML  = b.cover ? `<img src="${b.cover}" alt="${b.title}" style="min-height:220px">` : '<div class="det-cover-ph"><span class="ico">📚</span></div>';
-  const allCTags = [...(b.tags||[]), ...(b.themes||[])];
-  const ctagsHTML = allCTags.length ? `<div style="display:flex;flex-wrap:wrap;gap:5px">${allCTags.map(t=>`<span class="ctag-detail">${t}</span>`).join('')}</div>` : '';
+  // 소재/관계 태그 표시
+  const sojaiArr = b.sojaiTags && b.sojaiTags.length ? b.sojaiTags : [...(b.tags||[]), ...(b.themes||[])];
+  const relArr   = b.relTags   && b.relTags.length   ? b.relTags   : [];
+  const makeCtagRow = (label, arr, isRose) => arr.length
+    ? `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-size:10px;font-weight:700;color:var(--txt4);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap">${label}</span>${arr.map(t=>`<span class="ctag-detail" style="background:${isRose?'var(--rose-bg)':'var(--acc-bg)'};color:${isRose?'var(--rose)':'var(--acc)'};border-color:${isRose?'rgba(155,79,106,.2)':'rgba(44,82,130,.2)'}">${t}</span>`).join('')}</div>` : '';
+  const ctagsHTML = (sojaiArr.length||relArr.length)
+    ? `<div style="display:flex;flex-direction:column;gap:5px">${makeCtagRow('소재',sojaiArr,true)}${makeCtagRow('관계',relArr,false)}</div>` : '';
   const mlArr = Array.isArray(b.ml) ? b.ml : (b.ml&&b.ml.name ? [b.ml] : []);
   const mlOk = mlArr.length > 0;
-  const flOk = b.fl && (b.fl.name||b.fl.age||b.fl.type);
+  const flOk = b.fl && (b.fl.name||b.fl.age||b.fl.type||b.fl.intro);
   const mlCardsHTML = mlArr.map((m) => {
     const isSub = !!m.sub;
     const tag   = isSub ? '서브남' : '남주';
     const ico   = isSub ? '🩵' : '💙';
-    return `<div class="lead-detail-card"><div class="lead-detail-label ml">${ico} ${tag}</div><div class="lead-detail-row">${m.name?`<span><span>이름</span> ${m.name}</span>`:''}${m.age?`<span><span>나이</span> ${m.age}</span>`:''}${m.type?`<span><span>유형</span> ${m.type}</span>`:''}</div></div>`;
+    return `<div class="lead-detail-card"><div class="lead-detail-label ml">${ico} ${tag}</div><div class="lead-detail-row">${m.name?`<span><span>이름</span> ${m.name}</span>`:''}${m.age?`<span><span>나이</span> ${m.age}</span>`:''}${m.type?`<span><span>유형</span> ${m.type}</span>`:''}${m.intro?`<span style="color:var(--txt2);margin-top:4px;font-size:12px;line-height:1.6;white-space:pre-wrap">${m.intro}</span>`:''}</div></div>`;
   }).join('');
   const leadHTML = (mlOk||flOk) ? `<div class="lead-detail-grid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr))">
     ${mlCardsHTML}
-    ${flOk ? `<div class="lead-detail-card"><div class="lead-detail-label fl">🩷 여주</div><div class="lead-detail-row">${b.fl.name?`<span><span>이름</span> ${b.fl.name}</span>`:''}${b.fl.age?`<span><span>나이</span> ${b.fl.age}</span>`:''}${b.fl.type?`<span><span>유형</span> ${b.fl.type}</span>`:''}</div></div>` : ''}
+    ${flOk ? `<div class="lead-detail-card"><div class="lead-detail-label fl">🩷 여주</div><div class="lead-detail-row">${b.fl.name?`<span><span>이름</span> ${b.fl.name}</span>`:''}${b.fl.age?`<span><span>나이</span> ${b.fl.age}</span>`:''}${b.fl.type?`<span><span>유형</span> ${b.fl.type}</span>`:''}${b.fl.intro?`<span style="color:var(--txt2);margin-top:4px;font-size:12px;line-height:1.6;white-space:pre-wrap">${b.fl.intro}</span>`:''}</div></div>` : ''}
   </div>` : '';
   const readDays   = daysBetween(b.datestart, b.dateend);
   const datesHTML  = [
@@ -1607,7 +1606,7 @@ function drawCard(id) {
   const g = getGenre(gKey2);
   const genreLabels = Array.isArray(b.genre) ? b.genre : (b.genre ? [b.genre] : []); const th = SHARE_THEMES[shareTheme];
   const cv = document.getElementById('shareCanvas'); const ctx = cv.getContext('2d');
-  const W=720, H=960; // 2x resolution for crisp output
+  const W=720, H=960;
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle = th.bg; ctx.fillRect(0,0,W,H);
   ctx.fillStyle = g.color; ctx.fillRect(0,0,W,8);
@@ -1623,12 +1622,10 @@ function drawCard(id) {
   }
   ctx.restore();
   ctx.strokeStyle=th.line; ctx.lineWidth=2; ctx.beginPath(); ctx.roundRect(cx,cy,cw,ch,12); ctx.stroke();
-  // genre badge
   ctx.font='bold 20px sans-serif';
   const bw=ctx.measureText(g.name).width+32;
   ctx.fillStyle=hexToRgba(g.color,.18); ctx.beginPath(); ctx.roundRect(cx,cy+ch+16,bw,40,8); ctx.fill();
   ctx.fillStyle=g.color; ctx.textAlign='left'; ctx.fillText(g.name,cx+16,cy+ch+42);
-  // right column
   const tx=cx+cw+32, tw=W-tx-40;
   ctx.fillStyle=th.txt; ctx.font='bold 28px serif'; ctx.textAlign='left';
   let line='', ly=cy+30;
@@ -1640,10 +1637,8 @@ function drawCard(id) {
   if (line) ctx.fillText(line,tx,ly);
   ctx.fillStyle=th.sub; ctx.font='22px sans-serif'; ctx.fillText(b.author||'작가 미상',tx,ly+42);
   ctx.fillStyle=th.star; ctx.font='26px serif'; ctx.fillText('★'.repeat(b.rating||0)+'☆'.repeat(5-(b.rating||0)),tx,ly+82);
-  // divider
   const divY=cy+ch+80;
   ctx.strokeStyle=th.line; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(48,divY); ctx.lineTo(W-48,divY); ctx.stroke();
-  // review text
   const rv=b.review||b.summary||'';
   if (rv) {
     ctx.fillStyle=th.txt; ctx.font='22px sans-serif';
@@ -1655,10 +1650,8 @@ function drawCard(id) {
     }
     if (ln&&lc<5) ctx.fillText(ln,48,yy);
   }
-  // custom message
   const msg=document.getElementById('shareMsg')?.value||'';
   if (msg){ctx.fillStyle=g.color;ctx.font='bold 24px sans-serif';ctx.fillText('"'+msg+'"',48,H-76);}
-  // footer
   const libName=localStorage.getItem('myLib_name')||'나의 서재';
   ctx.fillStyle=th.sub; ctx.font='20px sans-serif'; ctx.textAlign='right'; ctx.fillText(libName,W-40,H-36);
 }
@@ -1794,7 +1787,6 @@ function toggleHla(head) {
   const arrow = head.querySelector('.hla-arrow');
   const body  = head.nextElementSibling;
   const open  = body.classList.contains('open');
-  // close all
   document.querySelectorAll('.hla-body').forEach(b => b.classList.remove('open'));
   document.querySelectorAll('.hla-arrow').forEach(a => a.classList.remove('open'));
   if (!open) { body.classList.add('open'); arrow.classList.add('open'); }
