@@ -329,11 +329,21 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .ctag-detail{font-size:12px;color:var(--rose);background:var(--rose-bg);padding:3px 10px;border-radius:14px;border:1px solid rgba(155,79,106,.2)}
 .lead-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .lead-detail-card{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px}
-.lead-detail-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.lead-detail-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
 .lead-detail-label.ml{color:var(--acc2)}
 .lead-detail-label.fl{color:var(--rose)}
-.lead-detail-row{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--txt2)}
-.lead-detail-row span{color:var(--txt3)}
+.lead-detail-row{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--txt)}
+.lead-detail-name{font-family:'DM Serif Display',serif;font-size:15px;color:var(--txt);margin-bottom:2px}
+.lead-detail-age{font-size:12px;color:var(--txt3)}
+.lead-sub-section{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.lead-sub-title{font-size:10px;font-weight:600;color:var(--txt4);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;padding-top:10px;border-top:1px solid var(--line)}
+.lead-sub-acc{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.lead-sub-head{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);cursor:pointer;user-select:none}
+.lead-sub-head:hover{background:var(--bg2)}
+.lead-sub-arrow{font-size:10px;color:var(--txt4);transition:transform .2s;display:inline-block}
+.lead-sub-arrow.open{transform:rotate(90deg)}
+.lead-sub-body{display:none;padding:10px 12px;border-top:1px solid var(--line)}
+.lead-sub-body.open{display:block}
 /* GOAL */
 .goal-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
 .goal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -745,7 +755,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
     <div style="background:var(--acc-bg);border:1px solid rgba(44,82,130,.15);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px">
       <span style="font-size:20px">✨</span>
       <div style="display:flex;flex-direction:column;gap:4px">
-        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.1</div>
+        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.2</div>
         <div style="font-size:12px;color:var(--txt3)">HL 전용 독서 기록 앱</div>
         <div style="font-size:12px;color:var(--txt3)">모든 건의 및 문의 사항은 트위터 계정 @HLismy1ife의 바이오 링크 익명 질문함으로 주세요!</div>
         <div style="font-size:12px;font-weight:700;color:#b04040;background:#fdf0f0;border:1px solid rgba(176,64,64,.2);border-radius:5px;padding:4px 8px;margin-top:2px">⚠️ HL 외 BL&GL 장르로 사용하지 마세요. 발견 즉시 폐쇄합니다.</div>
@@ -832,6 +842,22 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
     <div>
       <div class="help-section-title">🕐 업데이트 노트</div>
       <div class="help-log-acc" id="helpLogAcc">
+        <div class="hla-item">
+          <div class="hla-head" onclick="toggleHla(this)">
+            <span class="help-log-ver">v1.2</span>
+            <span class="hla-summary">현재 버전 — 남주/여주 상세보기 레이아웃 개선, 장르 필터 버그 수정</span>
+            <span class="hla-arrow">▶</span>
+          </div>
+          <div class="hla-body">
+            <ul class="hla-list">
+              <li>상세보기 남주/여주 카드 정확히 반반(50/50) 레이아웃으로 변경</li>
+              <li>이름·나이 레이블("이름", "나이" 텍스트) 제거 — 입력값만 깔끔하게 출력</li>
+              <li>서브남을 남주/여주 아래 별도 아코디언 섹션으로 분리</li>
+              <li>장르 pill 클릭 필터 버그 수정 (조직/암흑가 등 특수문자 포함 장르 클릭 안 되던 문제)</li>
+              <li>앱 시작 시 books에 저장된 장르 자동 동기화로 필터 누락 방지</li>
+            </ul>
+          </div>
+        </div>
         <div class="hla-item">
           <div class="hla-head" onclick="toggleHla(this)">
             <span class="help-log-ver">v1.1</span>
@@ -1631,17 +1657,49 @@ function openDetail(id) {
   const mlArr = Array.isArray(b.ml) ? b.ml : (b.ml&&b.ml.name ? [b.ml] : []);
   const mlOk = mlArr.length > 0;
   const flOk = b.fl && (b.fl.name||b.fl.age||(b.fl.typeTags&&b.fl.typeTags.length)||b.fl.intro);
-  const mlCardsHTML = mlArr.map((m) => {
-    const isSub = !!m.sub;
-    const tag   = isSub ? '서브남' : '남주';
-    const ico   = isSub ? '🩵' : '💙';
-    const mlTypesHtml = (m.typeTags&&m.typeTags.length) ? `<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:4px">${m.typeTags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>` : '';
-    return `<div class="lead-detail-card"><div class="lead-detail-label ml">${ico} ${tag}</div><div class="lead-detail-row">${m.name?`<span><span>이름</span> ${m.name}</span>`:''}${m.age?`<span><span>나이</span> ${m.age}</span>`:''}${mlTypesHtml}${m.intro?`<span style="color:var(--txt2);margin-top:4px;font-size:12px;line-height:1.6;white-space:pre-wrap">${m.intro}</span>`:''}</div></div>`;
-  }).join('');
-  const leadHTML = (mlOk||flOk) ? `<div class="lead-detail-grid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr))">
-    ${mlCardsHTML}
-    ${flOk ? `<div class="lead-detail-card"><div class="lead-detail-label fl">🩷 여주</div><div class="lead-detail-row">${b.fl.name?`<span><span>이름</span> ${b.fl.name}</span>`:''}${b.fl.age?`<span><span>나이</span> ${b.fl.age}</span>`:''}${(b.fl.typeTags&&b.fl.typeTags.length)?`<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:4px">${b.fl.typeTags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>`:''}${b.fl.intro?`<span style="color:var(--txt2);margin-top:4px;font-size:12px;line-height:1.6;white-space:pre-wrap">${b.fl.intro}</span>`:''}</div></div>` : ''}
+  // Separate main leads from sub leads
+  const mainMl = mlArr.filter(m => !m.sub);
+  const subMl  = mlArr.filter(m =>  m.sub);
+
+  function makeLeadCard(m, ico, labelCls, labelText) {
+    const typesHtml = (m.typeTags&&m.typeTags.length)
+      ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">${m.typeTags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>` : '';
+    const introHtml = m.intro
+      ? `<div style="font-size:12px;color:var(--txt2);line-height:1.7;margin-top:8px;white-space:pre-wrap">${m.intro}</div>` : '';
+    const nameHtml  = m.name ? `<div class="lead-detail-name">${m.name}</div>` : '';
+    const ageHtml   = m.age  ? `<div class="lead-detail-age">${m.age}</div>` : '';
+    return `<div class="lead-detail-card">
+      <div class="lead-detail-label ${labelCls}">${ico} ${labelText}</div>
+      ${nameHtml}${ageHtml}${typesHtml}${introHtml}
+    </div>`;
+  }
+
+  // Main section: first ml + fl side by side
+  const mainMlCard = mainMl.length > 0 ? makeLeadCard(mainMl[0], '💙', 'ml', '남주') : '';
+  const flCard = flOk ? makeLeadCard(b.fl, '🩷', 'fl', '여주') : '';
+
+  // Sub leads accordion
+  const subHtml = subMl.length ? `<div class="lead-sub-section">
+    <div class="lead-sub-title">서브남 (${subMl.length})</div>
+    ${subMl.map((m, i) => {
+      const bodyId = 'sub-body-' + i;
+      return `<div class="lead-sub-acc">
+        <div class="lead-sub-head" onclick="this.querySelector('.lead-sub-arrow').classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+          <span class="lead-sub-arrow">&#9654;</span>
+          <span style="font-size:11px;font-weight:600;color:var(--txt3)">🩵 서브남${subMl.length>1?' '+(i+1):''}</span>
+          <span style="font-size:12px;color:var(--txt4);margin-left:6px">${m.name||'이름 없음'}</span>
+        </div>
+        <div class="lead-sub-body">
+          ${makeLeadCard(m, '🩵', 'ml', '서브남')}
+        </div>
+      </div>`;
+    }).join('')}
   </div>` : '';
+
+  const leadHTML = (mlOk||flOk) ? `
+    <div class="lead-detail-grid">${mainMlCard}${flCard}</div>
+    ${subHtml}
+  ` : '';
   const readDays   = daysBetween(b.datestart, b.dateend);
   const datesHTML  = [
     b.datebuy   ? `<span class="det-date-item">🛒 구매 ${b.datebuy}</span>` : '',
