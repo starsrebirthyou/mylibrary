@@ -395,6 +395,22 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .emoji-btn{font-size:22px;cursor:pointer;padding:4px;border-radius:6px;border:2px solid transparent;background:none;transition:all .12s;line-height:1}
 .emoji-btn:hover{background:var(--bg2)}
 .emoji-btn.sel{border-color:var(--acc);background:var(--acc-bg)}
+/* REREAD */
+.reread-list{display:flex;flex-direction:column;gap:6px}
+.reread-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:13px}
+.reread-num{font-family:'DM Serif Display',serif;font-size:15px;color:var(--acc);min-width:48px}
+.reread-date{font-size:11px;color:var(--txt4);min-width:70px}
+.reread-note{flex:1;font-size:12px;color:var(--txt2)}
+.reread-del{background:none;border:none;cursor:pointer;color:var(--txt4);font-size:13px;padding:2px 4px;border-radius:4px;transition:color .12s}
+.reread-del:hover{color:var(--warn)}
+.add-reread-btn{display:flex;align-items:center;gap:6px;justify-content:center;padding:7px;border:1.5px dashed var(--line2);border-radius:8px;cursor:pointer;background:transparent;font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--txt3);transition:all .15s}
+.add-reread-btn:hover{border-color:var(--acc2);color:var(--acc);background:var(--acc-bg)}
+/* RANDOM BOOK */
+.random-btn{font-family:'Noto Sans KR',sans-serif;font-size:13px;cursor:pointer;border-radius:7px;padding:7px 13px;border:1px solid var(--line);background:var(--white);color:var(--txt2);transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.random-btn:hover{background:var(--rose-bg);border-color:var(--rose);color:var(--rose)}
+/* CLICKABLE TAG */
+.ctag-click{cursor:pointer;transition:background .12s,color .12s}
+.ctag-click:hover{background:var(--rose);color:#fff}
 .toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--txt);color:var(--white);padding:10px 16px;border-radius:8px;font-size:13px;box-shadow:var(--shadow-md);animation:toastIn .2s;pointer-events:none}
 @keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 /* HEADER MOBILE */
@@ -427,6 +443,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
   </div>
   <div class="header-spacer"></div>
   <div class="book-chip" id="bookChip">0권</div>
+  <button class="random-btn" onclick="openRandomBook()" title="오늘의 책">🎲</button>
   <button class="theme-btn" id="themeBtn" onclick="toggleDark()" title="다크 모드">🌙</button>
   <button class="hbtn" onclick="openJsonMenu()" title="JSON">⇅</button>
   <button class="hbtn" onclick="openHelp()" title="도움말" style="font-weight:700;border-radius:50%;width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;flex-shrink:0">?</button>
@@ -575,8 +592,9 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
             </select>
           </div>
         </div>
-        <div class="row2">
+        <div class="row3">
           <div class="fg"><label>구매 플랫폼</label><input type="text" id="f-platform" placeholder="리디, 카카오페이지, 밀리의 서재 ..."></div>
+          <div class="fg"><label>플랫폼 URL</label><input type="url" id="f-platformurl" placeholder="https://..."></div>
           <div class="fg"><label>금액 (원)</label><input type="number" id="f-price" placeholder="0" min="0"></div>
         </div>
         <!-- COUPLING TAGS: 소재 / 관계 -->
@@ -652,6 +670,9 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
         </div>
         <div class="fg"><label>줄거리</label><textarea id="f-summary" placeholder="간략한 줄거리를 적어주세요..." rows="3"></textarea></div>
         <div class="fg"><label>총평</label><textarea id="f-review" placeholder="읽고 난 감상을 자유롭게..." rows="3"></textarea></div>
+        <div class="sec-label" style="margin-top:2px">재독 기록</div>
+        <div class="reread-list" id="rereadList"></div>
+        <button class="add-reread-btn" onclick="addReread()">＋ 회독 추가</button>
         <div class="sec-label" style="margin-top:2px">발췌</div>
         <div class="excerpts-wrap" id="excerptsWrap"></div>
         <button class="add-excerpt-btn" onclick="addExcerpt()">＋ 발췌 추가</button>
@@ -755,7 +776,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
     <div style="background:var(--acc-bg);border:1px solid rgba(44,82,130,.15);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px">
       <span style="font-size:20px">✨</span>
       <div style="display:flex;flex-direction:column;gap:4px">
-        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.2</div>
+        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.3</div>
         <div style="font-size:12px;color:var(--txt3)">HL 전용 독서 기록 앱</div>
         <div style="font-size:12px;color:var(--txt3)">모든 건의 및 문의 사항은 트위터 계정 @HLismy1ife의 바이오 링크 익명 질문함으로 주세요!</div>
         <div style="font-size:12px;font-weight:700;color:#b04040;background:#fdf0f0;border:1px solid rgba(176,64,64,.2);border-radius:5px;padding:4px 8px;margin-top:2px">⚠️ HL 외 BL&GL 장르로 사용하지 마세요. 발견 즉시 폐쇄합니다.</div>
@@ -844,8 +865,24 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
       <div class="help-log-acc" id="helpLogAcc">
         <div class="hla-item">
           <div class="hla-head" onclick="toggleHla(this)">
+            <span class="help-log-ver">v1.3</span>
+            <span class="hla-summary">현재 버전 — 재독 기록, 오늘의 책, 태그 클릭 검색, 유형 통계, 플랫폼 URL</span>
+            <span class="hla-arrow">▶</span>
+          </div>
+          <div class="hla-body">
+            <ul class="hla-list">
+              <li>재독 기록 — 1회독·2회독... 날짜·한 줄 감상 추가, 상세보기에서 표시</li>
+              <li>오늘의 책 🎲 — 헤더 버튼으로 서재에서 랜덤 책 추천</li>
+              <li>태그 클릭 검색 — 상세보기·카드의 태그 클릭 시 같은 태그 책 바로 검색</li>
+              <li>남주/여주 유형 통계 — 통계 탭에 Top 10 유형 막대 그래프 추가</li>
+              <li>플랫폼 URL — 구매 링크 저장, 상세보기에서 클릭해 바로 이동</li>
+            </ul>
+          </div>
+        </div>
+        <div class="hla-item">
+          <div class="hla-head" onclick="toggleHla(this)">
             <span class="help-log-ver">v1.2</span>
-            <span class="hla-summary">현재 버전 — 남주/여주 상세보기 레이아웃 개선, 장르 필터 버그 수정</span>
+            <span class="hla-summary">남주/여주 상세보기 레이아웃 개선, 장르 필터 버그 수정</span>
             <span class="hla-arrow">▶</span>
           </div>
           <div class="hla-body">
@@ -1224,7 +1261,10 @@ function renderCard(b) {
   const sb = b.status ? ({완독:'<span class="status-badge sb-완독">✅ 완독</span>',읽는중:'<span class="status-badge sb-읽는중">📖 읽는중</span>',읽고싶어요:'<span class="status-badge sb-읽고싶어요">🔖 읽고싶어요</span>'}[b.status]||'') : '';
   const ageBadge = b.agerating ? `<span class="age-badge age-${b.agerating}">${b.agerating}</span>` : '';
   const allTags = [...(b.sojaiTags||b.tags||[]), ...(b.relTags||b.themes||[])];
-  const tags = allTags.slice(0,3).map(t => `<span class="ctag">${t}</span>`).join('');
+  const tags = allTags.slice(0,3).map(t => {
+    const enc = encodeURIComponent(t);
+    return `<span class="ctag ctag-click" data-tag="${enc}" onclick="event.stopPropagation();searchByTag(decodeURIComponent(this.dataset.tag))">${t}</span>`;
+  }).join('');
   const dot = `<span class="genre-dot" style="background:${hexToRgba(g.color,.13)};color:${g.color}">${g.name}</span>`;
   const isFav = b.fav ? ' on' : '';
   const favBtn = `<button class="fav-btn${isFav}" onclick="event.stopPropagation();toggleFav('${b.id}')" title="즐겨찾기"><span class="fav-star">★</span></button>`;
@@ -1333,6 +1373,23 @@ function renderStats() {
   const platBars = platEntries.map(([plat,cnt]) =>
     `<div class="bar-row"><span class="bar-label">${plat}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxP*100)}%;background:var(--acc)"></div></div><span class="bar-count">${cnt}</span></div>`
   ).join('') || '<p style="font-size:12px;color:var(--txt4)">플랫폼 데이터 없음</p>';
+
+  // 남주/여주 유형 통계
+  const mlTypeMap = {}, flTypeMap = {};
+  books.forEach(b => {
+    const mlArr2 = Array.isArray(b.ml) ? b.ml : (b.ml&&b.ml.name?[b.ml]:[]);
+    mlArr2.forEach(m => (m.typeTags||[]).forEach(t => { mlTypeMap[t]=(mlTypeMap[t]||0)+1; }));
+    if (b.fl) (b.fl.typeTags||[]).forEach(t => { flTypeMap[t]=(flTypeMap[t]||0)+1; });
+  });
+  const mlTypeEntries = Object.entries(mlTypeMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const flTypeEntries = Object.entries(flTypeMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxMlT = mlTypeEntries[0]?.[1]||1, maxFlT = flTypeEntries[0]?.[1]||1;
+  const mlTypeBars = mlTypeEntries.map(([t,c])=>
+    `<div class="bar-row"><span class="bar-label">${t}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxMlT*100)}%;background:var(--acc2)"></div></div><span class="bar-count">${c}</span></div>`
+  ).join('') || '<p style="font-size:12px;color:var(--txt4)">유형 데이터 없음</p>';
+  const flTypeBars = flTypeEntries.map(([t,c])=>
+    `<div class="bar-row"><span class="bar-label">${t}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxFlT*100)}%;background:var(--rose)"></div></div><span class="bar-count">${c}</span></div>`
+  ).join('') || '<p style="font-size:12px;color:var(--txt4)">유형 데이터 없음</p>';
   const starBars = [5,4,3,2,1].map(n =>
     `<div class="star-dist-row"><span class="star-dist-label">${'★'.repeat(n)}</span><div class="bar-track"><div class="bar-fill" style="width:${rated.length?Math.round(starMap[n]/rated.length*100):0}%;background:#e8a020"></div></div><span class="bar-count">${starMap[n]}</span></div>`
   ).join('');
@@ -1355,6 +1412,10 @@ function renderStats() {
       <div class="stats-section"><h3>장르 분포</h3>${genreBars}</div>
       <div class="stats-section"><h3>별점 분포</h3>${starBars}</div>
       <div class="stats-section"><h3>구매 플랫폼</h3>${platBars}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:4px">
+      <div class="stats-section"><h3>💙 남주 유형 Top 10</h3>${mlTypeBars}</div>
+      <div class="stats-section"><h3>🩷 여주 유형 Top 10</h3>${flTypeBars}</div>
     </div>`;
 }
 
@@ -1468,7 +1529,7 @@ function removeGenreTag(tag) {
 
 function openAdd() {
   editId = null; currentCover = null; currentStar = 0; currentStatusVal = '완독'; excerptsData = [];
-  currentCtags = []; currentCtagsSojai = []; currentCtagsRel = []; currentFlTypeTags = []; mlData = [];
+  currentCtags = []; currentCtagsSojai = []; currentCtagsRel = []; currentFlTypeTags = []; mlData = []; rereadData = [];
   document.getElementById('editModalTitle').textContent = '책 추가';
   document.getElementById('delBtn').style.display = 'none';
   clearForm(); renderGenreTags(); renderExcerpts(); updateStatusUI();
@@ -1502,6 +1563,9 @@ function openEdit(id) {
   document.getElementById('f-booktype').value  = b.booktype  || '';
   document.getElementById('f-agerating').value = b.agerating || '';
   document.getElementById('f-platform').value = b.platform || '';
+  const pUrlEl = document.getElementById('f-platformurl'); if(pUrlEl) pUrlEl.value = b.platformurl || '';
+  rereadData = (b.rereads || []).map(r => ({...r}));
+  renderRereadList();
   document.getElementById('f-price').value   = b.price || '';
   document.getElementById('f-datebuy').value  = b.datebuy  || '';
   document.getElementById('f-datestart').value= b.datestart|| '';
@@ -1515,9 +1579,10 @@ function openEdit(id) {
   document.getElementById('editOv').classList.add('open');
 }
 function clearForm() {
-  ['f-title','f-author','f-summary','f-review','f-platform','f-price','f-datebuy','f-datestart','f-dateend',
+  ['f-title','f-author','f-summary','f-review','f-platform','f-platformurl','f-price','f-datebuy','f-datestart','f-dateend',
    'f-fl-name','f-fl-age','f-fl-intro']
     .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  rereadData = []; renderRereadList();
   currentGenreTags = []; renderGenreTags();
   mlData = [];
   renderMlAcc();
@@ -1594,7 +1659,9 @@ function saveBook() {
     genre:     currentGenreTags.length ? (currentGenreTags.length === 1 ? currentGenreTags[0].trim() : currentGenreTags.map(t=>t.trim())) : '',
     booktype:  document.getElementById('f-booktype').value,
     agerating: document.getElementById('f-agerating').value,
-    platform: document.getElementById('f-platform').value.trim(),
+    platform:    document.getElementById('f-platform').value.trim(),
+    platformurl: document.getElementById('f-platformurl')?.value.trim() || '',
+    rereads: rereadData.map(r => ({...r})),
     price:    Number(document.getElementById('f-price').value) || 0,
     status:   currentStatusVal, themes, tags, sojaiTags, relTags, flTypeTags, rating: currentStar,
     summary:  document.getElementById('f-summary').value.trim(),
@@ -1650,9 +1717,18 @@ function openDetail(id) {
   // 소재/관계 태그 표시
   const sojaiArr = b.sojaiTags && b.sojaiTags.length ? b.sojaiTags : [...(b.tags||[]), ...(b.themes||[])];
   const relArr   = b.relTags   && b.relTags.length   ? b.relTags   : [];
-  const makeCtagRow = (label, arr, isRose) => arr.length
-    ? `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-size:10px;font-weight:700;color:var(--txt4);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap">${label}</span>${arr.map(t=>`<span class="ctag-detail" style="background:${isRose?'var(--rose-bg)':'var(--acc-bg)'};color:${isRose?'var(--rose)':'var(--acc)'};border-color:${isRose?'rgba(155,79,106,.2)':'rgba(44,82,130,.2)'}">${t}</span>`).join('')}</div>` : '';
-  const ctagsHTML = (sojaiArr.length||relArr.length)
+  const makeCtagRow = (label, arr, isRose) => {
+    if (!arr.length) return '';
+    const chips = arr.map(t => {
+      const enc = encodeURIComponent(t);
+      const bg  = isRose ? 'var(--rose-bg)' : 'var(--acc-bg)';
+      const col = isRose ? 'var(--rose)' : 'var(--acc)';
+      const bdr = isRose ? 'rgba(155,79,106,.2)' : 'rgba(44,82,130,.2)';
+      return `<span class="ctag-detail ctag-click" data-tag="${enc}" style="background:${bg};color:${col};border-color:${bdr}" onclick="searchByTag(decodeURIComponent(this.dataset.tag));closeDetail()">${t}</span>`;
+    }).join('');
+    return `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-size:10px;font-weight:700;color:var(--txt4);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap">${label}</span>${chips}</div>`;
+  };
+    const ctagsHTML = (sojaiArr.length||relArr.length)
     ? `<div style="display:flex;flex-direction:column;gap:5px">${makeCtagRow('소재',sojaiArr,true)}${makeCtagRow('관계',relArr,false)}</div>` : '';
   const mlArr = Array.isArray(b.ml) ? b.ml : (b.ml&&b.ml.name ? [b.ml] : []);
   const mlOk = mlArr.length > 0;
@@ -1706,7 +1782,7 @@ function openDetail(id) {
     b.datestart ? `<span class="det-date-item">📖 시작 ${b.datestart}</span>` : '',
     b.dateend   ? `<span class="det-date-item">✅ 완독 ${b.dateend}</span>` : '',
     readDays    ? `<span class="det-date-item">⏱ ${readDays}일 소요</span>` : '',
-    b.platform  ? `<span class="det-date-item">🏪 ${b.platform}</span>` : '',
+    b.platform  ? `<span class="det-date-item">${b.platformurl ? `<a href="${b.platformurl}" target="_blank" rel="noopener" style="color:var(--acc);text-decoration:none">🏪 ${b.platform} ↗</a>` : '🏪 '+b.platform}</span>` : '',
     b.price     ? `<span class="det-date-item">💰 ${fmtPrice(b.price)}</span>` : '',
   ].filter(Boolean).join('');
   document.getElementById('detailTop').innerHTML = `
@@ -1732,6 +1808,13 @@ function openDetail(id) {
     </div>`;
   let content = '';
   if (leadHTML) content += `<div class="det-section"><h3>남주 / 여주</h3>${leadHTML}</div>`;
+  // Rereads section
+  if (b.rereads && b.rereads.length) {
+    const rereadHtml = b.rereads.map((r,i) =>
+      `<div class="reread-item"><span class="reread-num">${i+1}회독</span><span class="reread-date">${r.date||'날짜 없음'}</span><span class="reread-note">${r.note||''}</span></div>`
+    ).join('');
+    content += `<div class="det-section"><h3>재독 기록 (${b.rereads.length}회)</h3><div class="reread-list">${rereadHtml}</div></div>`;
+  }
   if (b.summary) content += `<div class="det-section"><h3>줄거리</h3><p>${b.summary.replace(/\n/g,'<br>')}</p></div>`;
   if (b.review)  content += `<div class="det-section"><h3>총평</h3><p>${b.review.replace(/\n/g,'<br>')}</p></div>`;
   if (b.excerpts?.length) {
@@ -2023,6 +2106,67 @@ function clearGoal() {
   document.getElementById('goalInput').value = '';
   toggleGoalEdit(); renderGoal();
   showToast('목표가 삭제됐어요.');
+}
+
+// ── REREAD ──
+let rereadData = [];
+
+function addReread() {
+  rereadData.push({ id: uid(), date: new Date().toISOString().slice(0,10), note: '' });
+  renderRereadList();
+}
+function removeReread(id) {
+  rereadData = rereadData.filter(r => r.id !== id);
+  renderRereadList();
+}
+function syncReread(id, field, val) {
+  const r = rereadData.find(x => x.id === id);
+  if (r) r[field] = val;
+}
+function renderRereadList() {
+  const wrap = document.getElementById('rereadList');
+  if (!wrap) return;
+  if (!rereadData.length) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = '';
+  rereadData.forEach((r, idx) => {
+    const div = document.createElement('div');
+    div.className = 'reread-item';
+    div.innerHTML = `
+      <span class="reread-num">${idx + 1}회독</span>
+      <input type="date" value="${r.date||''}" style="font-size:12px;border:1px solid var(--line);border-radius:5px;padding:3px 6px;background:var(--white);color:var(--txt);font-family:'Noto Sans KR',sans-serif" oninput="syncReread('${r.id}','date',this.value)">
+      <input type="text" value="${r.note||''}" placeholder="한 줄 감상..." style="flex:1;font-size:12px;border:1px solid var(--line);border-radius:5px;padding:3px 8px;background:var(--white);color:var(--txt);font-family:'Noto Sans KR',sans-serif" oninput="syncReread('${r.id}','note',this.value)">
+      <button class="reread-del" onclick="removeReread('${r.id}')">✕</button>`;
+    wrap.appendChild(div);
+  });
+}
+
+// ── RANDOM BOOK ──
+function openRandomBook() {
+  if (!books.length) { showToast('책을 먼저 추가해주세요!'); return; }
+  const pool = books.filter(b => b.status !== '읽는중') ;
+  const pick = pool.length ? pool[Math.floor(Math.random() * pool.length)] : books[Math.floor(Math.random() * books.length)];
+  openDetail(pick.id);
+  showToast('🎲 오늘의 책: ' + pick.title);
+}
+
+// ── TAG CLICK SEARCH ──
+function searchByTag(tag) {
+  const input = document.getElementById('searchInput');
+  if (input) {
+    input.value = tag;
+    currentFilter = '전체';
+    currentStatusFilter = '';
+    showFavOnly = false;
+    document.querySelectorAll('.sp').forEach(p => p.classList.toggle('sp-on', p.dataset.sv === ''));
+    const pill = document.getElementById('favPill');
+    if (pill) pill.classList.remove('active');
+    render();
+    // Switch to library tab
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-library').classList.add('active');
+    document.querySelector('.nav-tab').classList.add('active');
+  }
 }
 
 document.addEventListener('keydown', e => {
