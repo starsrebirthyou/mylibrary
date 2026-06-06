@@ -1232,9 +1232,16 @@ function renderGenrePills() {
     gs.forEach(g => { if (g && !seen.has(g)) { seen.add(g); allGenres.push(g); } });
   });
   const all = [{id:'전체', name:'전체'}].concat(allGenres.map(g => ({id:g, name:g})));
-  document.getElementById('genrePills').innerHTML = all.map(g =>
-    `<button class="pill ${currentFilter===g.id?'active':''}" onclick="setFilter('${g.id}')">${g.name}</button>`
-  ).join('');
+  const wrap = document.getElementById('genrePills');
+  wrap.innerHTML = '';
+  all.forEach(function(g) {
+    const btn = document.createElement('button');
+    btn.className = 'pill' + (currentFilter === g.id ? ' active' : '');
+    btn.textContent = g.name;
+    btn.dataset.gid = g.id;
+    btn.onclick = function() { setFilter(g.id); };
+    wrap.appendChild(btn);
+  });
 }
 function setFilter(val) { currentFilter = val; render(); }
 function setStatusFilter(val) {
