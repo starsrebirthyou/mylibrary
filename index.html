@@ -925,6 +925,14 @@ const DEFAULT_GENRES = [
 let books      = JSON.parse(localStorage.getItem('myLib_books')    || '[]');
 let genres     = JSON.parse(localStorage.getItem('myLib_genres')   || JSON.stringify(DEFAULT_GENRES));
 let userGenres = JSON.parse(localStorage.getItem('myLib_userGenres') || '[]');
+// Sync: ensure all genres found in books are also in userGenres (for pill filter to work)
+(function() {
+  const seen = new Set(userGenres);
+  books.forEach(function(b) {
+    const gs = Array.isArray(b.genre) ? b.genre : (b.genre ? [b.genre] : []);
+    gs.forEach(function(g) { if (g && g.trim() && !seen.has(g.trim())) { seen.add(g.trim()); userGenres.push(g.trim()); } });
+  });
+})();
 let currentFilter = '전체', currentStatusFilter = '';
 let editId = null, currentCover = null, currentStar = 0, currentStatusVal = '완독';
 let excerptsData = [], currentShareId = null, shareTheme = 'cream';
@@ -1169,7 +1177,7 @@ function getSortedFiltered() {
   const sort = document.getElementById('sortSelect')?.value || 'newest';
   let list = books.filter(b => {
     const bGenres = Array.isArray(b.genre) ? b.genre : (b.genre ? [b.genre] : []);
-    const gm = currentFilter === '전체' || bGenres.includes(currentFilter);
+    const cf = currentFilter.trim(); const gm = cf === '전체' || bGenres.map(g=>g.trim()).includes(cf);
     const sm = !currentStatusFilter || b.status === currentStatusFilter;
     const fm = !showFavOnly || !!b.fav;
     const bGenreArr = Array.isArray(b.genre) ? b.genre : (b.genre ? [b.genre] : []);
@@ -1226,10 +1234,10 @@ function render() {
 function renderGenrePills() {
   const seen = new Set();
   const allGenres = [];
-  userGenres.forEach(g => { if (!seen.has(g)) { seen.add(g); allGenres.push(g); } });
+  userGenres.forEach(g => { const gt=g.trim(); if (!seen.has(gt)) { seen.add(gt); allGenres.push(gt); } });
   books.forEach(b => {
     const gs = Array.isArray(b.genre) ? b.genre : (b.genre ? [b.genre] : []);
-    gs.forEach(g => { if (g && !seen.has(g)) { seen.add(g); allGenres.push(g); } });
+    gs.forEach(g => { const gt=g.trim(); if (gt && !seen.has(gt)) { seen.add(gt); allGenres.push(gt); } });
   });
   const all = [{id:'전체', name:'전체'}].concat(allGenres.map(g => ({id:g, name:g})));
   const wrap = document.getElementById('genrePills');
@@ -1424,7 +1432,7 @@ function addGenreTag() {
   const val = input.value.trim();
   if (!val) return;
   if (!currentGenreTags.includes(val)) { currentGenreTags.push(val); renderGenreTags(); }
-  if (!userGenres.includes(val)) { userGenres.push(val); saveData(); }
+  if (!userGenres.includes(val)) { userGenres.push(val.trim()); saveData(); }
   input.value = '';
 }
 function removeGenreTag(tag) {
@@ -1557,7 +1565,7 @@ function saveBook() {
   const bookData = {
     id: editId||uid(), title,
     author:   document.getElementById('f-author').value.trim(),
-    genre:     currentGenreTags.length ? (currentGenreTags.length === 1 ? currentGenreTags[0] : currentGenreTags) : '',
+    genre:     currentGenreTags.length ? (currentGenreTags.length === 1 ? currentGenreTags[0].trim() : currentGenreTags.map(t=>t.trim())) : '',
     booktype:  document.getElementById('f-booktype').value,
     agerating: document.getElementById('f-agerating').value,
     platform: document.getElementById('f-platform').value.trim(),
