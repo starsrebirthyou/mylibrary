@@ -1129,9 +1129,19 @@ function renderMlAcc() {
     checkRow.innerHTML = `<input type="checkbox" ${isSub?'checked':''} onchange="syncMl('${m.id}','sub',this.checked);renderMlAcc()"> <span>서브남</span>`;
     const fields = document.createElement('div');
     fields.className = 'row2';
-    fields.innerHTML = `
-      <div class="fg"><label>이름</label><input type="text" value="${m.name||''}" oninput="syncMl('${m.id}','name',this.value)"></div>
-      <div class="fg"><label>나이</label><input type="text" value="${m.age||''}" oninput="syncMl('${m.id}','age',this.value)"></div>`;
+    // 이름
+    const nameWrap = document.createElement('div'); nameWrap.className = 'fg';
+    const nameLbl = document.createElement('label'); nameLbl.textContent = '이름';
+    const nameInp = document.createElement('input'); nameInp.type = 'text'; nameInp.value = m.name||'';
+    nameInp.oninput = (function(mid){ return function(){ syncMl(mid,'name',this.value); }; })(m.id);
+    nameWrap.appendChild(nameLbl); nameWrap.appendChild(nameInp);
+    // 나이
+    const ageWrap = document.createElement('div'); ageWrap.className = 'fg';
+    const ageLbl = document.createElement('label'); ageLbl.textContent = '나이';
+    const ageInp = document.createElement('input'); ageInp.type = 'text'; ageInp.value = m.age||'';
+    ageInp.oninput = (function(mid){ return function(){ syncMl(mid,'age',this.value); }; })(m.id);
+    ageWrap.appendChild(ageLbl); ageWrap.appendChild(ageInp);
+    fields.appendChild(nameWrap); fields.appendChild(ageWrap);
     // type tags widget
     const typeWrap = document.createElement('div');
     typeWrap.className = 'fg';
