@@ -19,8 +19,17 @@
   --warn:#b04040;--warn-bg:#fdf0f0;
   --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
   --shadow-md:0 2px 8px rgba(0,0,0,.10),0 8px 32px rgba(0,0,0,.08);
-  --radius:10px
+  --radius:10px;
+  --font-body:'Noto Sans KR',sans-serif;
+  --font-serif:'Noto Serif KR',serif;
+  --font-display:'DM Serif Display',serif
 }
+/* BG THEMES - light */
+body.theme-cream{ --bg:#fdf6ee;--bg2:#f5ead8;--bg3:#ede0c8;--line:#e8d8c0;--line2:#d8c4a8 }
+body.theme-rose{  --bg:#fdf0f4;--bg2:#f5e0e8;--bg3:#ecd0da;--line:#e8c8d4;--line2:#d8b0c0 }
+body.theme-mint{  --bg:#f0f8f4;--bg2:#e0f0e8;--bg3:#cce4d8;--line:#c0ddd0;--line2:#a8ccbc }
+body.theme-lavender{ --bg:#f4f0fd;--bg2:#e8e0f8;--bg3:#d8ccf0;--line:#ccc0e8;--line2:#b8a8d8 }
+body.theme-sky{   --bg:#f0f6fd;--bg2:#e0eef8;--bg3:#cce0f0;--line:#c0d8ec;--line2:#a8c8e0 }
 /* DARK MODE */
 body.dark{
   --white:#1a1820;--bg:#13121a;--bg2:#1e1c28;--bg3:#252333;
@@ -44,26 +53,26 @@ body.dark{
 .fav-btn.on{background:rgba(255,200,0,.25)}
 .fav-star{color:#ccc;transition:color .15s}
 .fav-btn.on .fav-star{color:#f5c518}
-.fav-pill{font-size:12px;cursor:pointer;padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:var(--white);color:var(--txt3);font-family:'Noto Sans KR',sans-serif;transition:all .15s}
+.fav-pill{font-size:12px;cursor:pointer;padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:var(--white);color:var(--txt3);font-family:var(--font-body);transition:all .15s}
 .fav-pill:hover{border-color:#f5c518;color:#c8a000}
 .fav-pill.active{background:#f5c518;color:#1a1200;border-color:#f5c518}
 .fav-section{margin-bottom:20px}
 .fav-section-title{font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-body{background:var(--bg);color:var(--txt);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
+body{background:var(--bg);color:var(--txt);font-family:var(--font-body);font-size:14px;line-height:1.6;min-height:100vh}
 ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px}
 /* HEADER */
 header{background:var(--white);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:100;height:56px;display:flex;align-items:center;padding:0 24px;gap:12px}
-.logo{font-family:'DM Serif Display',serif;font-size:20px;color:var(--txt);display:flex;align-items:center;gap:8px}
+.logo{font-family:var(--font-display);font-size:20px;color:var(--txt);display:flex;align-items:center;gap:8px}
 .logo em{color:var(--rose);font-style:italic}
 .header-spacer{flex:1}
 .book-chip{font-size:12px;color:var(--txt3);background:var(--bg2);border:1px solid var(--line);padding:4px 10px;border-radius:20px;white-space:nowrap}
-.hbtn{font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-radius:7px;padding:7px 13px;transition:all .15s;border:1px solid var(--line);background:var(--white);color:var(--txt2);white-space:nowrap}
+.hbtn{font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;border-radius:7px;padding:7px 13px;transition:all .15s;border:1px solid var(--line);background:var(--white);color:var(--txt2);white-space:nowrap}
 .hbtn:hover{background:var(--bg2)}
 .hbtn.primary{background:var(--acc);color:#fff;border-color:var(--acc)}
 .hbtn.primary:hover{background:var(--acc2);border-color:var(--acc2)}
 /* NAV */
 .nav-tabs{display:flex;border-bottom:1px solid var(--line);background:var(--white);padding:0 24px}
-.nav-tab{font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--txt3);background:none;border:none;cursor:pointer;padding:10px 16px;border-bottom:2px solid transparent;transition:all .15s;font-weight:400}
+.nav-tab{font-family:var(--font-body);font-size:13px;color:var(--txt3);background:none;border:none;cursor:pointer;padding:10px 16px;border-bottom:2px solid transparent;transition:all .15s;font-weight:400}
 .nav-tab:hover{color:var(--txt2)}
 .nav-tab.active{color:var(--acc);border-bottom-color:var(--acc);font-weight:600}
 /* LAYOUT */
@@ -73,17 +82,17 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .toolbar{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
 .toolbar-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .search-wrap{position:relative;width:220px;flex-shrink:0}
-.search-wrap input{width:100%;background:var(--white);border:1px solid var(--line);border-radius:7px;padding:7px 10px 7px 32px;font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--txt);transition:border-color .15s}
+.search-wrap input{width:100%;background:var(--white);border:1px solid var(--line);border-radius:7px;padding:7px 10px 7px 32px;font-family:var(--font-body);font-size:13px;color:var(--txt);transition:border-color .15s}
 .search-wrap input:focus{outline:none;border-color:var(--acc2)}
 .search-wrap input::placeholder{color:var(--txt4)}
 .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--txt4);font-size:13px;pointer-events:none}
 .genre-pills,.status-pills{display:flex;flex-wrap:wrap;gap:6px}
-.pill,.sp{font-size:12px;cursor:pointer;padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:var(--white);color:var(--txt3);font-family:'Noto Sans KR',sans-serif;transition:all .15s}
+.pill,.sp{font-size:12px;cursor:pointer;padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:var(--white);color:var(--txt3);font-family:var(--font-body);transition:all .15s}
 .pill:hover,.sp:hover{border-color:var(--acc2);color:var(--acc)}
 .pill.active,.sp.sp-on{background:var(--acc);color:#fff;border-color:var(--acc)}
-.pill-manage{font-size:12px;cursor:pointer;padding:5px 10px;border-radius:20px;border:1px dashed var(--line2);background:transparent;color:var(--txt4);font-family:'Noto Sans KR',sans-serif;transition:all .15s}
+.pill-manage{font-size:12px;cursor:pointer;padding:5px 10px;border-radius:20px;border:1px dashed var(--line2);background:transparent;color:var(--txt4);font-family:var(--font-body);transition:all .15s}
 .pill-manage:hover{border-color:var(--acc2);color:var(--acc)}
-.sort-select{font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--txt2);background:var(--white);border:1px solid var(--line);border-radius:7px;padding:5px 10px;cursor:pointer}
+.sort-select{font-family:var(--font-body);font-size:12px;color:var(--txt2);background:var(--white);border:1px solid var(--line);border-radius:7px;padding:5px 10px;cursor:pointer}
 .sort-select:focus{outline:none;border-color:var(--acc2)}
 /* STATUS BADGE on card */
 .status-badge{position:absolute;bottom:8px;right:8px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;backdrop-filter:blur(4px)}
@@ -98,10 +107,10 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .card-cover img{width:100%;height:100%;object-fit:cover;display:block}
 .card-cover-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px}
 .card-cover-ph .ph-icon{font-size:28px;opacity:.25}
-.card-cover-ph .ph-title{font-family:'Noto Serif KR',serif;font-size:12px;text-align:center;color:var(--txt2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.card-cover-ph .ph-title{font-family:var(--font-serif);font-size:12px;text-align:center;color:var(--txt2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .genre-dot{position:absolute;top:8px;left:8px;font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;backdrop-filter:blur(6px)}
 .card-body{padding:12px}
-.card-title{font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:var(--txt);margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4}
+.card-title{font-family:var(--font-serif);font-size:13px;font-weight:600;color:var(--txt);margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4}
 .card-author{font-size:11px;color:var(--txt3);margin-bottom:6px}
 .card-stars{display:flex;gap:2px;margin-bottom:6px}
 .s{font-size:12px}.s.on{color:#e8a020}.s.off{color:var(--line2)}
@@ -117,7 +126,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .modal{background:var(--white);border-radius:14px;box-shadow:var(--shadow-md),0 0 0 1px var(--line);width:100%;animation:slideUp .18s;overflow:hidden;display:flex;flex-direction:column}
 @keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modal-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
-.modal-head h2{font-family:'DM Serif Display',serif;font-size:17px;flex:1}
+.modal-head h2{font-family:var(--font-display);font-size:17px;flex:1}
 .btn-x{background:none;border:none;cursor:pointer;color:var(--txt3);width:30px;height:30px;border-radius:6px;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .12s}
 .btn-x:hover{background:var(--bg2);color:var(--txt)}
 .modal-body{padding:20px;overflow-y:auto;flex:1}
@@ -127,7 +136,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .fl{display:flex;flex-direction:column;gap:10px}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg label{font-size:11px;font-weight:600;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase}
-.fg input,.fg select,.fg textarea{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:7px 10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--txt);transition:border-color .15s;width:100%}
+.fg input,.fg select,.fg textarea{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:7px 10px;font-family:var(--font-body);font-size:13px;color:var(--txt);transition:border-color .15s;width:100%}
 .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--acc2)}
 .fg input::placeholder,.fg textarea::placeholder{color:var(--txt4)}
 .fg textarea{resize:vertical;min-height:68px;line-height:1.65}
@@ -150,7 +159,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .star-label{font-size:12px;color:var(--txt3);margin-left:4px}
 /* STATUS SELECTOR */
 .status-selector{display:flex;gap:6px;flex-wrap:wrap}
-.st-opt{font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:var(--white);color:var(--txt3);cursor:pointer;transition:all .15s}
+.st-opt{font-family:var(--font-body);font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:var(--white);color:var(--txt3);cursor:pointer;transition:all .15s}
 .st-opt:hover{border-color:var(--line2);color:var(--txt2)}
 .st-opt.sel-on{background:var(--acc);color:#fff;border-color:var(--acc)}
 /* EXCERPT */
@@ -165,10 +174,10 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .exc-del:hover{color:var(--warn)}
 .excerpt-body{padding:12px;display:none;flex-direction:column;gap:8px;border-top:1px solid var(--line)}
 .excerpt-body.open{display:flex}
-.add-excerpt-btn{display:flex;align-items:center;gap:6px;justify-content:center;padding:8px;border:1.5px dashed var(--line2);border-radius:8px;cursor:pointer;background:transparent;font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--txt3);transition:all .15s}
+.add-excerpt-btn{display:flex;align-items:center;gap:6px;justify-content:center;padding:8px;border:1.5px dashed var(--line2);border-radius:8px;cursor:pointer;background:transparent;font-family:var(--font-body);font-size:12px;color:var(--txt3);transition:all .15s}
 .add-excerpt-btn:hover{border-color:var(--acc2);color:var(--acc);background:var(--acc-bg)}
 /* BUTTONS */
-.btn{font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-radius:7px;padding:7px 14px;border:1px solid var(--line);background:var(--white);color:var(--txt2);transition:all .15s}
+.btn{font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;border-radius:7px;padding:7px 14px;border:1px solid var(--line);background:var(--white);color:var(--txt2);transition:all .15s}
 .btn:hover{background:var(--bg2)}
 .btn.primary{background:var(--acc);color:#fff;border-color:var(--acc)}
 .btn.primary:hover{background:var(--acc2);border-color:var(--acc2)}
@@ -184,7 +193,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .genre-del-btn{background:none;border:none;cursor:pointer;font-size:13px;color:var(--txt4);padding:2px 4px;border-radius:4px;transition:color .12s}
 .genre-del-btn:hover{color:var(--warn)}
 .add-genre-row{display:flex;gap:8px;align-items:center;margin-top:4px}
-.add-genre-row input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:7px 10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--txt)}
+.add-genre-row input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:7px 10px;font-family:var(--font-body);font-size:13px;color:var(--txt)}
 .add-genre-row input:focus{outline:none;border-color:var(--acc2)}
 .add-genre-row input::placeholder{color:var(--txt4)}
 .color-picker{width:34px;height:34px;border-radius:7px;cursor:pointer;padding:2px;background:var(--bg);border:1px solid var(--line)}
@@ -198,7 +207,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .det-info{padding:20px;display:flex;flex-direction:column;gap:8px}
 .det-badge-row{display:flex;gap:6px;flex-wrap:wrap}
 .det-genre-badge,.det-status-badge,.det-type-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:4px;display:inline-block}
-.det-title{font-family:'DM Serif Display',serif;font-size:24px;line-height:1.25;color:var(--txt)}
+.det-title{font-family:var(--font-display);font-size:24px;line-height:1.25;color:var(--txt)}
 .det-author{font-size:13px;color:var(--txt3)}
 .det-stars{display:flex;gap:3px}.det-stars .s{font-size:14px}
 .det-meta{display:flex;flex-wrap:wrap;gap:5px}
@@ -219,16 +228,16 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .exc-quote-body{padding:12px 14px;display:none;flex-direction:column;gap:8px}
 .exc-quote-body.open{display:flex}
 .exc-q-loc{font-size:11px;color:var(--txt4)}
-.exc-q-text{font-family:'Noto Serif KR',serif;font-style:italic;font-size:13px;color:var(--txt2);line-height:1.85;border-left:3px solid var(--acc);padding-left:12px}
+.exc-q-text{font-family:var(--font-serif);font-style:italic;font-size:13px;color:var(--txt2);line-height:1.85;border-left:3px solid var(--acc);padding-left:12px}
 .exc-q-reason{font-size:12px;color:var(--txt3);line-height:1.7}
 /* STATS */
 .stats-top-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px}
 .stat-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
 .stat-label{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-.stat-value{font-family:'DM Serif Display',serif;font-size:28px;color:var(--txt);line-height:1}
+.stat-value{font-family:var(--font-display);font-size:28px;color:var(--txt);line-height:1}
 .stat-sub{font-size:11px;color:var(--txt4);margin-top:3px}
 .stats-section{margin-bottom:24px}
-.stats-section h3{font-family:'DM Serif Display',serif;font-size:16px;color:var(--txt);margin-bottom:12px}
+.stats-section h3{font-family:var(--font-display);font-size:16px;color:var(--txt);margin-bottom:12px}
 /* MONTHLY CHART */
 .monthly-chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding:0 4px}
 .month-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
@@ -249,7 +258,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 /* CALENDAR */
 .cal-wrap{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
 .cal-nav{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.cal-nav-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--txt);flex:1;text-align:center}
+.cal-nav-title{font-family:var(--font-display);font-size:22px;color:var(--txt);flex:1;text-align:center}
 .cal-nav-btn{background:none;border:1px solid var(--line);border-radius:6px;cursor:pointer;padding:5px 14px;font-size:14px;color:var(--txt2);transition:background .12s;flex-shrink:0}
 .cal-nav-btn:hover{background:var(--bg2)}
 .cal-month-wrap{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px;width:100%}
@@ -280,15 +289,15 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .cal-tooltip{position:fixed;background:var(--txt);color:#fff;font-size:12px;padding:6px 10px;border-radius:7px;z-index:500;pointer-events:none;max-width:240px;line-height:1.5;display:none}
 /* COUPLING TAGS */
 .tag-cloud{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.ctag-preset{font-size:12px;cursor:pointer;padding:4px 10px;border-radius:16px;border:1px solid var(--line);background:var(--white);color:var(--txt3);font-family:'Noto Sans KR',sans-serif;transition:all .15s;user-select:none}
+.ctag-preset{font-size:12px;cursor:pointer;padding:4px 10px;border-radius:16px;border:1px solid var(--line);background:var(--white);color:var(--txt3);font-family:var(--font-body);transition:all .15s;user-select:none}
 .ctag-preset:hover{border-color:var(--rose);color:var(--rose)}
 .ctag-preset.selected{background:var(--rose-bg);color:var(--rose);border-color:var(--rose)}
 .ctag-wrap{display:flex;flex-direction:column;gap:6px}
 .ctag-input-row{display:flex;gap:6px;align-items:center}
-.ctag-input-row input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--txt)}
+.ctag-input-row input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-family:var(--font-body);font-size:13px;color:var(--txt)}
 .ctag-input-row input:focus{outline:none;border-color:var(--rose)}
 .ctag-input-row input::placeholder{color:var(--txt4)}
-.ctag-add-btn{font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--line);background:var(--white);color:var(--txt2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.ctag-add-btn{font-family:var(--font-body);font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--line);background:var(--white);color:var(--txt2);cursor:pointer;transition:all .15s;white-space:nowrap}
 .ctag-add-btn:hover{background:var(--rose-bg);border-color:var(--rose);color:var(--rose)}
 .selected-tags{display:flex;flex-wrap:wrap;gap:5px;min-height:24px}
 .stag{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--rose);background:var(--rose-bg);padding:3px 8px;border-radius:14px;border:1px solid rgba(155,79,106,.2)}
@@ -323,7 +332,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .ml-acc-del:hover{color:var(--warn)}
 .ml-acc-body{padding:10px;display:none;flex-direction:column;gap:8px;border-top:1px solid var(--line)}
 .ml-acc-body.open{display:flex}
-.add-ml-btn{display:flex;align-items:center;gap:6px;justify-content:center;padding:8px;border:1.5px dashed var(--line2);border-radius:8px;cursor:pointer;background:transparent;font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--txt3);transition:all .15s}
+.add-ml-btn{display:flex;align-items:center;gap:6px;justify-content:center;padding:8px;border:1.5px dashed var(--line2);border-radius:8px;cursor:pointer;background:transparent;font-family:var(--font-body);font-size:12px;color:var(--txt3);transition:all .15s}
 .add-ml-btn:hover{border-color:var(--acc2);color:var(--acc);background:var(--acc-bg)}
 /* DETAIL coupling tags */
 .ctag-detail{font-size:12px;color:var(--rose);background:var(--rose-bg);padding:3px 10px;border-radius:14px;border:1px solid rgba(155,79,106,.2)}
@@ -333,7 +342,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .lead-detail-label.ml{color:var(--acc2)}
 .lead-detail-label.fl{color:var(--rose)}
 .lead-detail-row{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--txt)}
-.lead-detail-name{font-family:'DM Serif Display',serif;font-size:15px;color:var(--txt);margin-bottom:2px}
+.lead-detail-name{font-family:var(--font-display);font-size:15px;color:var(--txt);margin-bottom:2px}
 .lead-detail-age{font-size:12px;color:var(--txt3)}
 .lead-sub-section{margin-top:12px;display:flex;flex-direction:column;gap:8px}
 .lead-sub-title{font-size:10px;font-weight:600;color:var(--txt4);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;padding-top:10px;border-top:1px solid var(--line)}
@@ -351,9 +360,9 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .goal-edit-btn{background:none;border:none;cursor:pointer;font-size:12px;color:var(--txt4);padding:2px 6px;border-radius:4px;transition:background .12s}
 .goal-edit-btn:hover{background:var(--bg2);color:var(--txt2)}
 .goal-numbers{display:flex;align-items:baseline;gap:6px;margin-bottom:10px}
-.goal-done{font-family:'DM Serif Display',serif;font-size:32px;color:var(--acc);line-height:1}
+.goal-done{font-family:var(--font-display);font-size:32px;color:var(--acc);line-height:1}
 .goal-sep{font-size:16px;color:var(--txt4)}
-.goal-target{font-family:'DM Serif Display',serif;font-size:20px;color:var(--txt3);line-height:1}
+.goal-target{font-family:var(--font-display);font-size:20px;color:var(--txt3);line-height:1}
 .goal-unit{font-size:12px;color:var(--txt4);margin-left:2px}
 .goal-track{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-bottom:8px}
 .goal-bar{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
@@ -361,7 +370,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 .goal-pct{font-size:12px;color:var(--txt3);text-align:right}
 .goal-msg{font-size:12px;color:var(--green);font-weight:500;margin-top:4px}
 .goal-set-wrap{display:flex;gap:6px;align-items:center;margin-top:8px}
-.goal-set-input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--txt);width:100%}
+.goal-set-input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-family:var(--font-body);font-size:13px;color:var(--txt);width:100%}
 .goal-set-input:focus{outline:none;border-color:var(--acc2)}
 /* SHARE */
 .share-canvas-wrap{display:flex;justify-content:center;padding:8px 0 14px}
@@ -398,19 +407,40 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 /* REREAD */
 .reread-list{display:flex;flex-direction:column;gap:6px}
 .reread-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:13px}
-.reread-num{font-family:'DM Serif Display',serif;font-size:15px;color:var(--acc);min-width:48px}
+.reread-num{font-family:var(--font-display);font-size:15px;color:var(--acc);min-width:48px}
 .reread-date{font-size:11px;color:var(--txt4);min-width:70px}
 .reread-note{flex:1;font-size:12px;color:var(--txt2)}
 .reread-del{background:none;border:none;cursor:pointer;color:var(--txt4);font-size:13px;padding:2px 4px;border-radius:4px;transition:color .12s}
 .reread-del:hover{color:var(--warn)}
-.add-reread-btn{display:flex;align-items:center;gap:6px;justify-content:center;padding:7px;border:1.5px dashed var(--line2);border-radius:8px;cursor:pointer;background:transparent;font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--txt3);transition:all .15s}
+.add-reread-btn{display:flex;align-items:center;gap:6px;justify-content:center;padding:7px;border:1.5px dashed var(--line2);border-radius:8px;cursor:pointer;background:transparent;font-family:var(--font-body);font-size:12px;color:var(--txt3);transition:all .15s}
 .add-reread-btn:hover{border-color:var(--acc2);color:var(--acc);background:var(--acc-bg)}
 /* RANDOM BOOK */
-.random-btn{font-family:'Noto Sans KR',sans-serif;font-size:13px;cursor:pointer;border-radius:7px;padding:7px 13px;border:1px solid var(--line);background:var(--white);color:var(--txt2);transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.random-btn{font-family:var(--font-body);font-size:13px;cursor:pointer;border-radius:7px;padding:7px 13px;border:1px solid var(--line);background:var(--white);color:var(--txt2);transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px}
 .random-btn:hover{background:var(--rose-bg);border-color:var(--rose);color:var(--rose)}
 /* CLICKABLE TAG */
 .ctag-click{cursor:pointer;transition:background .12s,color .12s}
 .ctag-click:hover{background:var(--rose);color:#fff}
+/* SETTINGS MODAL */
+.settings-btn{font-size:15px;cursor:pointer;background:none;border:1px solid var(--line);border-radius:50%;width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--txt2);transition:all .15s}
+.settings-btn:hover{background:var(--bg2)}
+.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:4px}
+.theme-swatch{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:6px;border-radius:8px;border:2px solid transparent;transition:all .15s}
+.theme-swatch:hover{border-color:var(--line2)}
+.theme-swatch.active{border-color:var(--acc)}
+.theme-circle{width:36px;height:36px;border-radius:50%;border:1px solid rgba(0,0,0,.08)}
+.theme-name{font-size:11px;color:var(--txt3)}
+.font-list{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.font-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--line);border-radius:8px;cursor:pointer;transition:all .15s;background:var(--white)}
+.font-item:hover{border-color:var(--line2)}
+.font-item.active{border-color:var(--acc);background:var(--acc-bg)}
+.font-item-name{font-size:14px;flex:1;color:var(--txt)}
+.font-item-sample{font-size:12px;color:var(--txt3)}
+.font-del{background:none;border:none;cursor:pointer;color:var(--txt4);font-size:13px;padding:2px 4px;border-radius:4px;transition:color .12s;margin-left:4px}
+.font-del:hover{color:var(--warn)}
+.font-upload-area{border:1.5px dashed var(--line2);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:all .15s;background:var(--bg)}
+.font-upload-area:hover{border-color:var(--acc2);background:var(--acc-bg)}
+.font-upload-area p{font-size:12px;color:var(--txt3);margin-top:4px}
+#fontFileInput{display:none}
 .toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--txt);color:var(--white);padding:10px 16px;border-radius:8px;font-size:13px;box-shadow:var(--shadow-md);animation:toastIn .2s;pointer-events:none}
 @keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 /* HEADER MOBILE */
@@ -444,6 +474,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
   <div class="header-spacer"></div>
   <div class="book-chip" id="bookChip">0권</div>
   <button class="random-btn" onclick="openRandomBook()" title="오늘의 책">🎲</button>
+  <button class="settings-btn" onclick="openSettings()" title="테마/폰트 설정">⚙</button>
   <button class="theme-btn" id="themeBtn" onclick="toggleDark()" title="다크 모드">🌙</button>
   <button class="hbtn" onclick="openJsonMenu()" title="JSON">⇅</button>
   <button class="hbtn" onclick="openHelp()" title="도움말" style="font-weight:700;border-radius:50%;width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;flex-shrink:0">?</button>
@@ -763,6 +794,39 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
 </div>
 </div>
 
+<!-- SETTINGS MODAL -->
+<div class="ov" id="settingsOv" onclick="ovClick(event,'settingsOv',closeSettings)">
+<div class="modal" style="max-width:500px;max-height:85vh">
+  <div class="modal-head"><h2>⚙ 테마 / 폰트 설정</h2><button class="btn-x" onclick="closeSettings()">✕</button></div>
+  <div class="modal-body" style="display:flex;flex-direction:column;gap:20px">
+
+    <!-- BG THEME -->
+    <div>
+      <div class="sec-label">배경 테마</div>
+      <div class="theme-grid" id="themeGrid"></div>
+    </div>
+
+    <!-- FONT -->
+    <div>
+      <div class="sec-label">폰트</div>
+      <div class="font-list" id="fontList"></div>
+      <!-- Upload -->
+      <div style="margin-top:10px">
+        <div class="font-upload-area" onclick="document.getElementById('fontFileInput').click()">
+          <div style="font-size:22px;opacity:.4">🔤</div>
+          <p>ttf / otf 파일을 클릭해서 업로드<br>업로드한 폰트는 브라우저에 저장돼요</p>
+        </div>
+        <input type="file" id="fontFileInput" accept=".ttf,.otf,.woff,.woff2" multiple onchange="handleFontUpload(event)">
+      </div>
+    </div>
+
+  </div>
+  <div class="modal-foot">
+    <div class="ml-auto"><button class="btn primary" onclick="closeSettings()">완료</button></div>
+  </div>
+</div>
+</div>
+
 <!-- HELP MODAL -->
 <div class="ov" id="helpOv" onclick="ovClick(event,'helpOv',closeHelp)">
 <div class="modal" style="max-width:640px;max-height:88vh">
@@ -776,7 +840,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
     <div style="background:var(--acc-bg);border:1px solid rgba(44,82,130,.15);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px">
       <span style="font-size:20px">✨</span>
       <div style="display:flex;flex-direction:column;gap:4px">
-        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.3</div>
+        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.4</div>
         <div style="font-size:12px;color:var(--txt3)">HL 전용 독서 기록 앱</div>
         <div style="font-size:12px;color:var(--txt3)">모든 건의 및 문의 사항은 트위터 계정 @HLismy1ife의 바이오 링크 익명 질문함으로 주세요!</div>
         <div style="font-size:12px;font-weight:700;color:#b04040;background:#fdf0f0;border:1px solid rgba(176,64,64,.2);border-radius:5px;padding:4px 8px;margin-top:2px">⚠️ HL 외 BL&GL 장르로 사용하지 마세요. 발견 즉시 폐쇄합니다.</div>
@@ -865,8 +929,24 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
       <div class="help-log-acc" id="helpLogAcc">
         <div class="hla-item">
           <div class="hla-head" onclick="toggleHla(this)">
+            <span class="help-log-ver">v1.4</span>
+            <span class="hla-summary">현재 버전 — 배경 테마 6종, 폰트 변경 + ttf/otf 업로드</span>
+            <span class="hla-arrow">▶</span>
+          </div>
+          <div class="hla-body">
+            <ul class="hla-list">
+              <li>배경 테마 6종 — 기본·크림·로즈·민트·라벤더·스카이 (헤더 ⚙ 버튼)</li>
+              <li>폰트 변경 — Noto Sans KR / Noto Serif KR 기본 제공</li>
+              <li>커스텀 폰트 업로드 — ttf / otf / woff / woff2 파일 업로드로 직접 추가</li>
+              <li>업로드 폰트는 브라우저 localStorage에 저장 (최대 10개)</li>
+              <li>다크 모드와 테마 조합 가능, 모든 설정 새로고침 후 유지</li>
+            </ul>
+          </div>
+        </div>
+        <div class="hla-item">
+          <div class="hla-head" onclick="toggleHla(this)">
             <span class="help-log-ver">v1.3</span>
-            <span class="hla-summary">현재 버전 — 재독 기록, 오늘의 책, 태그 클릭 검색, 유형 통계, 플랫폼 URL</span>
+            <span class="hla-summary">재독 기록, 오늘의 책, 태그 클릭 검색, 유형 통계, 플랫폼 URL</span>
             <span class="hla-arrow">▶</span>
           </div>
           <div class="hla-body">
@@ -959,7 +1039,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
     </div>
     <div class="fg">
       <label>미리보기</label>
-      <div style="display:flex;align-items:center;gap:8px;font-family:'DM Serif Display',serif;font-size:20px;padding:10px;background:var(--bg);border-radius:8px">
+      <div style="display:flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:20px;padding:10px;background:var(--bg);border-radius:8px">
         <span id="libNamePreviewEmoji">📚</span>
         <span id="libNamePreviewText">나의 서재</span>
       </div>
@@ -1694,6 +1774,7 @@ function saveBook() {
   if (editId) {
     const idx = books.findIndex(b=>b.id===editId);
     bookData.createdAt = books[idx].createdAt || bookData.updatedAt;
+    bookData.fav = books[idx].fav || false;  // preserve fav on edit
     books[idx] = bookData;
   } else {
     bookData.createdAt = bookData.updatedAt;
@@ -2179,13 +2260,182 @@ function searchByTag(tag) {
   }
 }
 
+// ── SETTINGS: THEME + FONT ──
+const BG_THEMES = [
+  { id:'default',   name:'기본',    light:['#f7f6f4','#f0eeeb','#e8e5e0'], dark:null },
+  { id:'cream',     name:'크림',    light:['#fdf6ee','#f5ead8','#ede0c8'], dark:null },
+  { id:'rose',      name:'로즈',    light:['#fdf0f4','#f5e0e8','#ecd0da'], dark:null },
+  { id:'mint',      name:'민트',    light:['#f0f8f4','#e0f0e8','#cce4d8'], dark:null },
+  { id:'lavender',  name:'라벤더',  light:['#f4f0fd','#e8e0f8','#d8ccf0'], dark:null },
+  { id:'sky',       name:'스카이',  light:['#f0f6fd','#e0eef8','#cce0f0'], dark:null },
+];
+
+const BUILTIN_FONTS = [
+  { id:'noto-sans',  name:'Noto Sans KR', sample:'가나다 ABC', body:"'Noto Sans KR',sans-serif", serif:"'Noto Serif KR',serif", display:"'DM Serif Display',serif", builtin:true },
+  { id:'noto-serif', name:'Noto Serif KR', sample:'가나다 ABC', body:"'Noto Serif KR',serif", serif:"'Noto Serif KR',serif", display:"'DM Serif Display',serif", builtin:true },
+];
+
+let currentTheme = localStorage.getItem('myLib_theme') || 'default';
+let currentFontId = localStorage.getItem('myLib_fontId') || 'noto-sans';
+let customFonts = JSON.parse(localStorage.getItem('myLib_customFonts') || '[]');
+// customFonts = [{id, name, dataUrl, ext}]
+
+function getAllFonts() {
+  return [...BUILTIN_FONTS, ...customFonts.map(f => ({
+    id: f.id, name: f.name, sample: '가나다 ABC',
+    body: `'${f.name}',sans-serif`, serif: `'${f.name}',serif`, display: `'${f.name}',serif`,
+    builtin: false
+  }))];
+}
+
+function applyTheme(id) {
+  BG_THEMES.forEach(t => document.body.classList.remove('theme-' + t.id));
+  if (id && id !== 'default') document.body.classList.add('theme-' + id);
+  currentTheme = id;
+  localStorage.setItem('myLib_theme', id);
+}
+
+function applyFont(id) {
+  const fonts = getAllFonts();
+  const f = fonts.find(x => x.id === id);
+  if (!f) return;
+  currentFontId = id;
+  localStorage.setItem('myLib_fontId', id);
+  const root = document.documentElement;
+  root.style.setProperty('--font-body',    f.body);
+  root.style.setProperty('--font-serif',   f.serif);
+  root.style.setProperty('--font-display', f.display);
+}
+
+function initSettings() {
+  applyTheme(currentTheme);
+  // Load custom fonts into @font-face first
+  customFonts.forEach(f => registerFontFace(f));
+  applyFont(currentFontId);
+}
+
+function registerFontFace(f) {
+  // f = {id, name, dataUrl, ext}
+  const style = document.createElement('style');
+  style.id = 'font-face-' + f.id;
+  style.textContent = `@font-face { font-family: '${f.name}'; src: url('${f.dataUrl}') format('${f.ext === 'ttf' ? 'truetype' : f.ext === 'otf' ? 'opentype' : f.ext}'); }`;
+  // Remove old if exists
+  const old = document.getElementById('font-face-' + f.id);
+  if (old) old.remove();
+  document.head.appendChild(style);
+}
+
+function openSettings() {
+  renderThemeGrid();
+  renderFontList();
+  document.getElementById('settingsOv').classList.add('open');
+}
+function closeSettings() { document.getElementById('settingsOv').classList.remove('open'); }
+
+function renderThemeGrid() {
+  const grid = document.getElementById('themeGrid');
+  grid.innerHTML = '';
+  BG_THEMES.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'theme-swatch' + (currentTheme === t.id ? ' active' : '');
+    div.onclick = function() {
+      applyTheme(t.id);
+      document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+      div.classList.add('active');
+    };
+    const circle = document.createElement('div');
+    circle.className = 'theme-circle';
+    circle.style.background = `linear-gradient(135deg,${t.light[0]} 50%,${t.light[1]} 50%)`;
+    const name = document.createElement('span');
+    name.className = 'theme-name';
+    name.textContent = t.name;
+    div.appendChild(circle); div.appendChild(name);
+    grid.appendChild(div);
+  });
+}
+
+function renderFontList() {
+  const list = document.getElementById('fontList');
+  list.innerHTML = '';
+  getAllFonts().forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'font-item' + (currentFontId === f.id ? ' active' : '');
+    div.style.fontFamily = f.body;
+    div.onclick = function() {
+      applyFont(f.id);
+      document.querySelectorAll('.font-item').forEach(el => el.classList.remove('active'));
+      div.classList.add('active');
+    };
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'font-item-name';
+    nameSpan.textContent = f.name;
+    const sampleSpan = document.createElement('span');
+    sampleSpan.className = 'font-item-sample';
+    sampleSpan.textContent = f.sample;
+    div.appendChild(nameSpan); div.appendChild(sampleSpan);
+    // delete btn for custom fonts
+    if (!f.builtin) {
+      const del = document.createElement('button');
+      del.className = 'font-del';
+      del.textContent = '✕';
+      del.title = '삭제';
+      del.onclick = (function(fid){ return function(e){
+        e.stopPropagation();
+        if (!confirm("'" + f.name + "' 폰트를 삭제할까요?")) return;
+        customFonts = customFonts.filter(x => x.id !== fid);
+        localStorage.setItem('myLib_customFonts', JSON.stringify(customFonts));
+        const styleEl = document.getElementById('font-face-' + fid);
+        if (styleEl) styleEl.remove();
+        if (currentFontId === fid) { applyFont('noto-sans'); }
+        renderFontList();
+        showToast('폰트가 삭제됐어요.');
+      }; })(f.id);
+      div.appendChild(del);
+    }
+    list.appendChild(div);
+  });
+}
+
+function handleFontUpload(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  let loaded = 0;
+  files.forEach(file => {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!['ttf','otf','woff','woff2'].includes(ext)) {
+      showToast(file.name + ' — 지원하지 않는 형식이에요 (ttf/otf/woff/woff2)');
+      return;
+    }
+    const fontName = file.name.replace(/\.[^.]+$/, '');
+    const fontId = 'custom-' + uid();
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const dataUrl = ev.target.result;
+      const fontObj = { id: fontId, name: fontName, dataUrl, ext };
+      customFonts.push(fontObj);
+      // Keep only latest 10 custom fonts (data URLs are large)
+      if (customFonts.length > 10) customFonts = customFonts.slice(-10);
+      localStorage.setItem('myLib_customFonts', JSON.stringify(customFonts));
+      registerFontFace(fontObj);
+      loaded++;
+      if (loaded === files.length) {
+        renderFontList();
+        showToast(loaded + '개 폰트가 추가됐어요!');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+}
+
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeEdit(); closeDetail(); closeGenreManager(); closeJsonMenu(); closeShare(); closeLibName(); closeHelp(); }
+  if (e.key === 'Escape') { closeEdit(); closeDetail(); closeGenreManager(); closeJsonMenu(); closeShare(); closeLibName(); closeHelp(); closeSettings(); }
 });
 
 render();
 updateLogo();
 initDark();
+initSettings();
 </script>
 </body>
 </html>
