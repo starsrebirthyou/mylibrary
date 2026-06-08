@@ -919,7 +919,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
         <div class="help-step"><span class="help-step-num">3</span><span>장르 필터·상태 필터·정렬·검색으로 원하는 책 바로 찾기</span></div>
         <div class="help-step"><span class="help-step-num">4</span><span><strong>통계</strong> 탭에서 내 독서 패턴 한눈에 확인</span></div>
         <div class="help-step"><span class="help-step-num">5</span><span><strong>완독 캘린더</strong>에서 독서 목표 설정 후 진행률 체크</span></div>
-        <div class="help-step"><span class="help-step-num">6</span><span>데이터는 브라우저 <strong>localStorage</strong>에 자동 저장 — 정기적으로 JSON 백업 권장</span></div>
+        <div class="help-step"><span class="help-step-num">6</span><span>데이터는 브라우저 <strong>IndexedDB</strong>에 자동 저장 — 용량 제한 없음, 정기적으로 JSON 백업 권장</span></div>
       </div>
     </div>
 
@@ -938,7 +938,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
               <li>배경 테마 6종 — 기본·크림·로즈·민트·라벤더·스카이 (헤더 ⚙ 버튼)</li>
               <li>폰트 변경 — Noto Sans KR / Noto Serif KR 기본 제공</li>
               <li>커스텀 폰트 업로드 — ttf / otf / woff / woff2 파일 업로드로 직접 추가</li>
-              <li>업로드 폰트는 브라우저 localStorage에 저장 (최대 10개)</li>
+              <li>업로드 폰트는 브라우저 localStorage에 저장 (최대 10개, 소용량)</li>
               <li>다크 모드와 테마 조합 가능, 모든 설정 새로고침 후 유지</li>
             </ul>
           </div>
@@ -1065,17 +1065,95 @@ const DEFAULT_GENRES = [
   {id:'미스터리', name:'미스터리', color:'#6a4090', locked:true},
   {id:'기타', name:'기타', color:'#808080', locked:true},
 ];
-let books      = JSON.parse(localStorage.getItem('myLib_books')    || '[]');
-let genres     = JSON.parse(localStorage.getItem('myLib_genres')   || JSON.stringify(DEFAULT_GENRES));
-let userGenres = JSON.parse(localStorage.getItem('myLib_userGenres') || '[]');
-// Sync: ensure all genres found in books are also in userGenres (for pill filter to work)
-(function() {
-  const seen = new Set(userGenres);
-  books.forEach(function(b) {
-    const gs = Array.isArray(b.genre) ? b.genre : (b.genre ? [b.genre] : []);
-    gs.forEach(function(g) { if (g && g.trim() && !seen.has(g.trim())) { seen.add(g.trim()); userGenres.push(g.trim()); } });
+let books      = [];
+let genres     = JSON.parse(JSON.stringify(DEFAULT_GENRES));
+let userGenres = [];
+
+// ── IndexedDB 설정 ──────────────────────────────────────────────
+const DB_NAME    = 'myLibDB';
+const DB_VERSION = 1;
+const STORE      = 'kvStore';
+let _db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    if (_db) { resolve(_db); return; }
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      e.target.result.createObjectStore(STORE);
+    };
+    req.onsuccess = e => { _db = e.target.result; resolve(_db); };
+    req.onerror   = e => reject(e.target.error);
   });
-})();
+}
+
+function idbGet(key) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx  = db.transaction(STORE, 'readonly');
+    const req = tx.objectStore(STORE).get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror   = () => reject(req.error);
+  }));
+}
+
+function idbSet(key, value) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx  = db.transaction(STORE, 'readwrite');
+    const req = tx.objectStore(STORE).put(value, key);
+    req.onsuccess = () => resolve();
+    req.onerror   = () => reject(req.error);
+  }));
+}
+
+async function saveData() {
+  try {
+    await Promise.all([
+      idbSet('myLib_books',     books),
+      idbSet('myLib_genres',    genres),
+      idbSet('myLib_userGenres',userGenres),
+    ]);
+  } catch(e) {
+    console.error('saveData 오류:', e);
+    showToast('저장 중 오류가 발생했어요.');
+  }
+}
+
+async function loadFromDB() {
+  const [b, g, ug] = await Promise.all([
+    idbGet('myLib_books'),
+    idbGet('myLib_genres'),
+    idbGet('myLib_userGenres'),
+  ]);
+  books      = b  || [];
+  genres     = g  || JSON.parse(JSON.stringify(DEFAULT_GENRES));
+  userGenres = ug || [];
+
+  // ── 구버전 localStorage 데이터 마이그레이션 (최초 1회) ──
+  if (!books.length) {
+    const lsBooks = localStorage.getItem('myLib_books');
+    if (lsBooks) {
+      try {
+        books = JSON.parse(lsBooks);
+        genres = JSON.parse(localStorage.getItem('myLib_genres') || 'null') || genres;
+        userGenres = JSON.parse(localStorage.getItem('myLib_userGenres') || '[]');
+        await saveData();
+        localStorage.removeItem('myLib_books');
+        localStorage.removeItem('myLib_genres');
+        localStorage.removeItem('myLib_userGenres');
+        showToast('기존 데이터를 IndexedDB로 이전했어요 ✅');
+      } catch(e) { console.warn('마이그레이션 실패:', e); }
+    }
+  }
+
+  // Sync: ensure all genres found in books are also in userGenres
+  (function() {
+    const seen = new Set(userGenres);
+    books.forEach(function(b) {
+      const gs = Array.isArray(b.genre) ? b.genre : (b.genre ? [b.genre] : []);
+      gs.forEach(function(g) { if (g && g.trim() && !seen.has(g.trim())) { seen.add(g.trim()); userGenres.push(g.trim()); } });
+    });
+  })();
+}
 let currentFilter = '전체', currentStatusFilter = '';
 let editId = null, currentCover = null, currentStar = 0, currentStatusVal = '완독';
 let excerptsData = [], currentShareId = null, shareTheme = 'cream';
@@ -1097,10 +1175,10 @@ function toggleDark() {
 }
 
 // ── FAVOURITE ──
-function toggleFav(id) {
+async function toggleFav(id) {
   const b = books.find(x => x.id === id); if (!b) return;
   b.fav = !b.fav;
-  saveData(); render();
+  await saveData(); render();
 }
 function toggleFavFilter() {
   showFavOnly = !showFavOnly;
@@ -1292,11 +1370,7 @@ function _addMlTypeTag(id, input, wrap) {
   if(!m.typeTags.includes(val)) { m.typeTags.push(val); _renderMlTypeTag(id,val,wrap); }
   input.value='';
 }
-function saveData() {
-  localStorage.setItem('myLib_books',     JSON.stringify(books));
-  localStorage.setItem('myLib_genres',    JSON.stringify(genres));
-  localStorage.setItem('myLib_userGenres',JSON.stringify(userGenres));
-}
+// saveData는 위에서 async 함수로 정의됨 (IndexedDB)
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 function getGenre(id) { return genres.find(g => g.id === id) || {name: id, color: '#808080'}; }
 function hexToRgba(hex, a) {
@@ -1352,8 +1426,7 @@ function renderCard(b) {
   const ageBadge = b.agerating ? `<span class="age-badge age-${b.agerating}">${b.agerating}</span>` : '';
   const allTags = [...(b.sojaiTags||b.tags||[]), ...(b.relTags||b.themes||[])];
   const tags = allTags.slice(0,3).map(t => {
-    const enc = encodeURIComponent(t);
-    return `<span class="ctag ctag-click" data-tag="${enc}" onclick="event.stopPropagation();searchByTag(decodeURIComponent(this.dataset.tag))">${t}</span>`;
+    return `<span class="ctag">${t}</span>`;
   }).join('');
   const dot = `<span class="genre-dot" style="background:${hexToRgba(g.color,.13)};color:${g.color}">${g.name}</span>`;
   const isFav = b.fav ? ' on' : '';
@@ -1603,13 +1676,13 @@ function renderGenreTags() {
     wrap.appendChild(span);
   });
 }
-function addGenreTag() {
+async function addGenreTag() {
   const input = document.getElementById('genreInput');
   if (!input) return;
   const val = input.value.trim();
   if (!val) return;
   if (!currentGenreTags.includes(val)) { currentGenreTags.push(val); renderGenreTags(); }
-  if (!userGenres.includes(val)) { userGenres.push(val.trim()); saveData(); }
+  if (!userGenres.includes(val)) { userGenres.push(val.trim()); await saveData(); }
   input.value = '';
 }
 function removeGenreTag(tag) {
@@ -1780,14 +1853,13 @@ function saveBook() {
     bookData.createdAt = bookData.updatedAt;
     books.unshift(bookData);
   }
-  saveData(); render(); closeEdit();
-  showToast(editId ? '수정되었어요!' : '책이 추가되었어요!');
+  saveData().then(() => { render(); closeEdit(); showToast(editId ? '수정되었어요!' : '책이 추가되었어요!'); });
 }
-function deleteBook() {
+async function deleteBook() {
   const b = books.find(x=>x.id===editId);
   if (!b || !confirm('"' + b.title + '" 을(를) 삭제할까요?')) return;
   books = books.filter(x=>x.id!==editId);
-  saveData(); render(); closeEdit(); showToast('삭제되었어요.');
+  await saveData(); render(); closeEdit(); showToast('삭제되었어요.');
 }
 
 // ── DETAIL ──
@@ -1811,11 +1883,10 @@ function openDetail(id) {
   const makeCtagRow = (label, arr, isRose) => {
     if (!arr.length) return '';
     const chips = arr.map(t => {
-      const enc = encodeURIComponent(t);
       const bg  = isRose ? 'var(--rose-bg)' : 'var(--acc-bg)';
       const col = isRose ? 'var(--rose)' : 'var(--acc)';
       const bdr = isRose ? 'rgba(155,79,106,.2)' : 'rgba(44,82,130,.2)';
-      return `<span class="ctag-detail ctag-click" data-tag="${enc}" style="background:${bg};color:${col};border-color:${bdr}" onclick="searchByTag(decodeURIComponent(this.dataset.tag));closeDetail()">${t}</span>`;
+      return `<span class="ctag-detail" style="background:${bg};color:${col};border-color:${bdr}">${t}</span>`;
     }).join('');
     return `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-size:10px;font-weight:700;color:var(--txt4);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap">${label}</span>${chips}</div>`;
   };
@@ -1921,9 +1992,9 @@ function openDetail(id) {
   document.getElementById('detailOv').classList.add('open');
 }
 function editFromDetail(id) { closeDetail(); setTimeout(()=>openEdit(id), 120); }
-function toggleFavDetail(id) {
+async function toggleFavDetail(id) {
   const b = books.find(x => x.id===id); if(!b) return;
-  b.fav = !b.fav; saveData(); render();
+  b.fav = !b.fav; await saveData(); render();
   const btn = document.getElementById('detFavBtn');
   if (btn) { btn.style.color = b.fav ? '#f5c518' : 'var(--txt3)'; btn.textContent = '★ ' + (b.fav?'즐겨찾기 해제':'즐겨찾기'); }
 }
@@ -2021,23 +2092,23 @@ function renderGenreList() {
       ${g.locked ? '<span style="font-size:11px;color:var(--txt4)">기본</span>' : `<button class="genre-del-btn" onclick="removeGenre('${g.id}')">✕</button>`}
     </div>`).join('');
 }
-function addGenre() {
+async function addGenre() {
   const name  = document.getElementById('newGenreName').value.trim();
   const color = document.getElementById('newGenreColor').value;
   if (!name) { showToast('장르 이름을 입력해주세요.'); return; }
   if (genres.find(g => g.name === name)) { showToast('이미 있는 장르예요.'); return; }
   genres.push({id: uid(), name, color, locked: false});
-  saveData(); renderGenreList();
+  await saveData(); renderGenreList();
   document.getElementById('newGenreName').value = '';
   showToast("'" + name + "' 장르가 추가됐어요!");
 }
-function removeGenre(id) {
+async function removeGenre(id) {
   const g = genres.find(x => x.id === id);
   if (!g || g.locked) return;
   if (!confirm("'" + g.name + "' 장르를 삭제할까요?")) return;
   books.forEach(b => { if (b.genre === id) b.genre = '기타'; });
   genres = genres.filter(x => x.id !== id);
-  saveData(); renderGenreList(); showToast('삭제되었어요.');
+  await saveData(); renderGenreList(); showToast('삭제되었어요.');
 }
 
 // ── JSON ──
@@ -2060,7 +2131,7 @@ function importJSON(e) {
       if (!data.books || !Array.isArray(data.books)) throw new Error();
       books  = data.books;
       genres = (data.genres && Array.isArray(data.genres)) ? data.genres : DEFAULT_GENRES;
-      saveData(); render(); closeJsonMenu(); showToast(books.length + '권 불러왔어요!');
+      saveData().then(() => { render(); closeJsonMenu(); showToast(books.length + '권 불러왔어요!'); });
     } catch(err) { showToast('올바른 JSON 파일이 아니에요.'); }
   };
   reader.readAsText(file); e.target.value = '';
@@ -2240,26 +2311,6 @@ function openRandomBook() {
   showToast('🎲 오늘의 책: ' + pick.title);
 }
 
-// ── TAG CLICK SEARCH ──
-function searchByTag(tag) {
-  const input = document.getElementById('searchInput');
-  if (input) {
-    input.value = tag;
-    currentFilter = '전체';
-    currentStatusFilter = '';
-    showFavOnly = false;
-    document.querySelectorAll('.sp').forEach(p => p.classList.toggle('sp-on', p.dataset.sv === ''));
-    const pill = document.getElementById('favPill');
-    if (pill) pill.classList.remove('active');
-    render();
-    // Switch to library tab
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('page-library').classList.add('active');
-    document.querySelector('.nav-tab').classList.add('active');
-  }
-}
-
 // ── SETTINGS: THEME + FONT ──
 const BG_THEMES = [
   { id:'default',   name:'기본',    light:['#f7f6f4','#f0eeeb','#e8e5e0'], dark:null },
@@ -2432,10 +2483,16 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { closeEdit(); closeDetail(); closeGenreManager(); closeJsonMenu(); closeShare(); closeLibName(); closeHelp(); closeSettings(); }
 });
 
-render();
-updateLogo();
 initDark();
 initSettings();
+loadFromDB().then(() => {
+  render();
+  updateLogo();
+}).catch(err => {
+  console.error('DB 로드 오류:', err);
+  render();
+  updateLogo();
+});
 </script>
 </body>
 </html>
