@@ -496,7 +496,6 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
           <span class="search-icon">🔍</span>
           <input type="text" id="searchInput" placeholder="제목, 작가, 태그 검색" oninput="render()">
         </div>
-        <div class="genre-pills" id="genrePills"></div>
       </div>
       <div class="toolbar-row">
         <div class="status-pills" id="statusPillsWrap">
@@ -840,7 +839,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
     <div style="background:var(--acc-bg);border:1px solid rgba(44,82,130,.15);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px">
       <span style="font-size:20px">✨</span>
       <div style="display:flex;flex-direction:column;gap:4px">
-        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.4</div>
+        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.5</div>
         <div style="font-size:12px;color:var(--txt3)">HL 전용 독서 기록 앱</div>
         <div style="font-size:12px;color:var(--txt3)">모든 건의 및 문의 사항은 트위터 계정 @HLismy1ife의 바이오 링크 익명 질문함으로 주세요!</div>
         <div style="font-size:12px;font-weight:700;color:#b04040;background:#fdf0f0;border:1px solid rgba(176,64,64,.2);border-radius:5px;padding:4px 8px;margin-top:2px">⚠️ HL 외 BL&GL 장르로 사용하지 마세요. 발견 즉시 폐쇄합니다.</div>
@@ -929,8 +928,24 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
       <div class="help-log-acc" id="helpLogAcc">
         <div class="hla-item">
           <div class="hla-head" onclick="toggleHla(this)">
+            <span class="help-log-ver">v1.5</span>
+            <span class="hla-summary">현재 버전 — 장르 필터 제거, IndexedDB 마이그레이션</span>
+            <span class="hla-arrow">▶</span>
+          </div>
+          <div class="hla-body">
+            <ul class="hla-list">
+              <li>장르 카테고리 필터 제거 — 장르 pill 버튼 삭제, 제목·작가·태그 통합 검색만 사용</li>
+              <li>태그 클릭 검색 제거 — 카드·상세보기의 태그 클릭 시 검색 기능 삭제</li>
+              <li>저장소 LocalStorage → IndexedDB 마이그레이션 — 용량 제한 없이 데이터 보관 가능</li>
+              <li>기존 LocalStorage 데이터 자동 이전 (최초 1회, 이전 완료 후 LocalStorage 항목 삭제)</li>
+              <li>await 오류(addGenre·removeGenre·importJSON) 수정</li>
+            </ul>
+          </div>
+        </div>
+        <div class="hla-item">
+          <div class="hla-head" onclick="toggleHla(this)">
             <span class="help-log-ver">v1.4</span>
-            <span class="hla-summary">현재 버전 — 배경 테마 6종, 폰트 변경 + ttf/otf 업로드</span>
+            <span class="hla-summary">배경 테마 6종, 폰트 변경 + ttf/otf 업로드</span>
             <span class="hla-arrow">▶</span>
           </div>
           <div class="hla-body">
@@ -978,7 +993,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
         <div class="hla-item">
           <div class="hla-head" onclick="toggleHla(this)">
             <span class="help-log-ver">v1.1</span>
-            <span class="hla-summary">현재 버전 — 유형 태그화, 소재/관계 분리</span>
+            <span class="hla-summary">유형 태그화, 소재/관계 분리</span>
             <span class="hla-arrow">▶</span>
           </div>
           <div class="hla-body">
@@ -1426,7 +1441,8 @@ function renderCard(b) {
   const ageBadge = b.agerating ? `<span class="age-badge age-${b.agerating}">${b.agerating}</span>` : '';
   const allTags = [...(b.sojaiTags||b.tags||[]), ...(b.relTags||b.themes||[])];
   const tags = allTags.slice(0,3).map(t => {
-    return `<span class="ctag">${t}</span>`;
+    const enc = encodeURIComponent(t);
+    return `<span class="ctag ctag-click" data-tag="${enc}" onclick="event.stopPropagation();searchByTag(decodeURIComponent(this.dataset.tag))">${t}</span>`;
   }).join('');
   const dot = `<span class="genre-dot" style="background:${hexToRgba(g.color,.13)};color:${g.color}">${g.name}</span>`;
   const isFav = b.fav ? ' on' : '';
@@ -1440,7 +1456,6 @@ function renderCard(b) {
 function render() {
   document.getElementById('bookChip').textContent = books.length + '권';
   updateLogo();
-  renderGenrePills();
   const filtered = getSortedFiltered();
   const grid = document.getElementById('bookGrid');
   if (!filtered.length) {
@@ -1460,27 +1475,7 @@ function render() {
   const html = remaining.map(b => renderCard(b)).join('');
   if (html) grid.insertAdjacentHTML('beforeend', html);
 }
-function renderGenrePills() {
-  const seen = new Set();
-  const allGenres = [];
-  userGenres.forEach(g => { const gt=g.trim(); if (!seen.has(gt)) { seen.add(gt); allGenres.push(gt); } });
-  books.forEach(b => {
-    const gs = Array.isArray(b.genre) ? b.genre : (b.genre ? [b.genre] : []);
-    gs.forEach(g => { const gt=g.trim(); if (gt && !seen.has(gt)) { seen.add(gt); allGenres.push(gt); } });
-  });
-  const all = [{id:'전체', name:'전체'}].concat(allGenres.map(g => ({id:g, name:g})));
-  const wrap = document.getElementById('genrePills');
-  wrap.innerHTML = '';
-  all.forEach(function(g) {
-    const btn = document.createElement('button');
-    btn.className = 'pill' + (currentFilter === g.id ? ' active' : '');
-    btn.textContent = g.name;
-    btn.dataset.gid = g.id;
-    btn.onclick = function() { setFilter(g.id); };
-    wrap.appendChild(btn);
-  });
-}
-function setFilter(val) { currentFilter = val; render(); }
+
 function setStatusFilter(val) {
   currentStatusFilter = val;
   document.querySelectorAll('.sp').forEach(p => p.classList.toggle('sp-on', p.dataset.sv === val));
@@ -1883,10 +1878,11 @@ function openDetail(id) {
   const makeCtagRow = (label, arr, isRose) => {
     if (!arr.length) return '';
     const chips = arr.map(t => {
+      const enc = encodeURIComponent(t);
       const bg  = isRose ? 'var(--rose-bg)' : 'var(--acc-bg)';
       const col = isRose ? 'var(--rose)' : 'var(--acc)';
       const bdr = isRose ? 'rgba(155,79,106,.2)' : 'rgba(44,82,130,.2)';
-      return `<span class="ctag-detail" style="background:${bg};color:${col};border-color:${bdr}">${t}</span>`;
+      return `<span class="ctag-detail ctag-click" data-tag="${enc}" style="background:${bg};color:${col};border-color:${bdr}" onclick="searchByTag(decodeURIComponent(this.dataset.tag));closeDetail()">${t}</span>`;
     }).join('');
     return `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-size:10px;font-weight:700;color:var(--txt4);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap">${label}</span>${chips}</div>`;
   };
@@ -2309,6 +2305,26 @@ function openRandomBook() {
   const pick = pool.length ? pool[Math.floor(Math.random() * pool.length)] : books[Math.floor(Math.random() * books.length)];
   openDetail(pick.id);
   showToast('🎲 오늘의 책: ' + pick.title);
+}
+
+// ── TAG CLICK SEARCH ──
+function searchByTag(tag) {
+  const input = document.getElementById('searchInput');
+  if (input) {
+    input.value = tag;
+    currentFilter = '전체';
+    currentStatusFilter = '';
+    showFavOnly = false;
+    document.querySelectorAll('.sp').forEach(p => p.classList.toggle('sp-on', p.dataset.sv === ''));
+    const pill = document.getElementById('favPill');
+    if (pill) pill.classList.remove('active');
+    render();
+    // Switch to library tab
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-library').classList.add('active');
+    document.querySelector('.nav-tab').classList.add('active');
+  }
 }
 
 // ── SETTINGS: THEME + FONT ──
