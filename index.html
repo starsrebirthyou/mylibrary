@@ -839,7 +839,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
     <div style="background:var(--acc-bg);border:1px solid rgba(44,82,130,.15);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px">
       <span style="font-size:20px">✨</span>
       <div style="display:flex;flex-direction:column;gap:4px">
-        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.5</div>
+        <div style="font-size:13px;font-weight:600;color:var(--acc)">현재 버전 v1.6</div>
         <div style="font-size:12px;color:var(--txt3)">HL 전용 독서 기록 앱</div>
         <div style="font-size:12px;color:var(--txt3)">모든 건의 및 문의 사항은 트위터 계정 @HLismy1ife의 바이오 링크 익명 질문함으로 주세요!</div>
         <div style="font-size:12px;font-weight:700;color:#b04040;background:#fdf0f0;border:1px solid rgba(176,64,64,.2);border-radius:5px;padding:4px 8px;margin-top:2px">⚠️ HL 외 BL&GL 장르로 사용하지 마세요. 발견 즉시 폐쇄합니다.</div>
@@ -875,7 +875,7 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
           <div class="help-card-icon">📊</div>
           <div class="help-card-body">
             <div class="help-card-title">통계</div>
-            <div class="help-card-desc">완독·읽는중·읽고싶어요 현황, 총 소비 금액, 평균 독서 시간, 월별 독서량 그래프, 장르·별점·플랫폼 분포</div>
+            <div class="help-card-desc">완독·읽는중·읽고싶어요 현황, 총 소비 금액, 평균 독서 시간, 월별 구매 현황 그래프, 장르·별점·플랫폼 분포</div>
           </div>
         </div>
         <div class="help-card">
@@ -928,8 +928,22 @@ header{background:var(--white);border-bottom:1px solid var(--line);position:stic
       <div class="help-log-acc" id="helpLogAcc">
         <div class="hla-item">
           <div class="hla-head" onclick="toggleHla(this)">
+            <span class="help-log-ver">v1.6</span>
+            <span class="hla-summary">현재 버전 — 통계 '월별 독서량' → '월별 구매 현황' 변경 (구매일 기준)</span>
+            <span class="hla-arrow">▶</span>
+          </div>
+          <div class="hla-body">
+            <ul class="hla-list">
+              <li>통계 탭 '월별 독서량' 그래프를 '월별 구매 현황'으로 변경</li>
+              <li>집계 기준 변경 — 완독일/등록일 기준 → 구매일 기준 (구매일 미입력 시 등록일로 대체)</li>
+              <li>막대 툴팁에 "N권 구매" 표현 추가로 구매 현황임을 명확히 표시</li>
+            </ul>
+          </div>
+        </div>
+        <div class="hla-item">
+          <div class="hla-head" onclick="toggleHla(this)">
             <span class="help-log-ver">v1.5</span>
-            <span class="hla-summary">현재 버전 — 장르 필터 제거, IndexedDB 마이그레이션</span>
+            <span class="hla-summary">장르 필터 제거, IndexedDB 마이그레이션</span>
             <span class="hla-arrow">▶</span>
           </div>
           <div class="hla-body">
@@ -1511,7 +1525,7 @@ function renderStats() {
   const monthMap = Array(12).fill(0);
   const monthBooks = Array(12).fill(null).map(()=>[]);
   books.forEach(b => {
-    const d = b.dateend ? new Date(b.dateend) : (b.createdAt ? new Date(b.createdAt) : null);
+    const d = b.datebuy ? new Date(b.datebuy) : (b.createdAt ? new Date(b.createdAt) : null);
     if (d && d.getFullYear() === year) {
       monthMap[d.getMonth()]++;
       monthBooks[d.getMonth()].push(b.title);
@@ -1521,7 +1535,7 @@ function renderStats() {
   const MN = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
   const monthBars = monthMap.map((n,i) => {
     const tipTitles = monthBooks[i].slice(0,3).join(', ') + (monthBooks[i].length>3?'…':'');
-    const tip = n ? `${MN[i]}: ${n}권${tipTitles?(' ('+tipTitles+')'):''}` : MN[i];
+    const tip = n ? `${MN[i]}: ${n}권 구매${tipTitles?(' ('+tipTitles+')'):''}` : MN[i];
     return `<div class="month-col"><div class="month-num-label">${n||''}</div><div class="month-bar-wrap"><div class="month-bar" style="height:${Math.round(n/maxM*88)+2}px;opacity:${n?1:.12}" data-tip="${tip}"></div></div></div>`;
   }).join('');
   const genreBars = genreEntries.map(([id,cnt]) => {
@@ -1562,7 +1576,7 @@ function renderStats() {
       <div class="stat-card"><div class="stat-label">평균 독서 시간</div><div class="stat-value">${avgDays||'-'}</div><div class="stat-sub">${avgDays?('일 / '+daysArr.length+'권 기준'):'날짜 미입력'}</div></div>
     </div>
     <div class="stats-section">
-      <h3>월별 독서량 <span style="font-size:13px;color:var(--txt4);font-family:'Noto Sans KR',sans-serif">${year}년</span></h3>
+      <h3>월별 구매 현황 <span style="font-size:13px;color:var(--txt4);font-family:'Noto Sans KR',sans-serif">${year}년</span></h3>
       <div class="monthly-chart">${monthBars}</div>
       <div class="month-labels">${MN.map(m=>`<div class="month-label">${m}</div>`).join('')}</div>
     </div>
