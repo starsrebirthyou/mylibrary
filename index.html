@@ -480,13 +480,13 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
         </div>
         <div class="fg"><label>소재 태그</label>
           <div class="ctag-wrap">
-            <div class="ctag-input-row"><input type="text" id="ctagInputSojai" placeholder="#계약결혼, #환생 ..." oninput="showTagAC(this,addCtagFromInputSojai)" onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFromInputSojai();hideTagAC();}" onblur="setTimeout(hideTagAC,150)"><button class="ctag-add-btn" onclick="addCtagFromInputSojai()">+</button></div>
+            <div class="ctag-input-row"><input type="text" id="ctagInputSojai" placeholder="#계약결혼, #환생 ..." oninput="showTagAC(this,addCtagFromInputSojai,'sojai')" onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFromInputSojai();hideTagAC();}" onblur="setTimeout(hideTagAC,150)"><button class="ctag-add-btn" onclick="addCtagFromInputSojai()">+</button></div>
             <div class="selected-tags" id="selectedTagsSojai"></div>
           </div>
         </div>
         <div class="fg"><label>관계 태그</label>
           <div class="ctag-wrap">
-            <div class="ctag-input-row"><input type="text" id="ctagInputRel" placeholder="#소꿉친구, #집착남 ..." oninput="showTagAC(this,addCtagFromInputRel)" onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFromInputRel();hideTagAC();}" onblur="setTimeout(hideTagAC,150)"><button class="ctag-add-btn" onclick="addCtagFromInputRel()">+</button></div>
+            <div class="ctag-input-row"><input type="text" id="ctagInputRel" placeholder="#소꿉친구, #집착남 ..." oninput="showTagAC(this,addCtagFromInputRel,'rel')" onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFromInputRel();hideTagAC();}" onblur="setTimeout(hideTagAC,150)"><button class="ctag-add-btn" onclick="addCtagFromInputRel()">+</button></div>
             <div class="selected-tags" id="selectedTagsRel"></div>
           </div>
         </div>
@@ -504,7 +504,7 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
             </div>
             <div class="fg"><label>유형 태그</label>
               <div class="ctag-wrap">
-                <div class="ctag-input-row"><input type="text" id="ctagInputFlType" placeholder="#츤데레녀, #악녀 ..." oninput="showTagAC(this,addCtagFlType)" onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFlType();hideTagAC();}" onblur="setTimeout(hideTagAC,150)"><button class="ctag-add-btn" onclick="addCtagFlType()">+</button></div>
+                <div class="ctag-input-row"><input type="text" id="ctagInputFlType" placeholder="#츤데레녀, #악녀 ..." oninput="showTagAC(this,addCtagFlType,'fl')" onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFlType();hideTagAC();}" onblur="setTimeout(hideTagAC,150)"><button class="ctag-add-btn" onclick="addCtagFlType()">+</button></div>
                 <div class="selected-tags" id="selectedFlTypeTags"></div>
               </div>
             </div>
@@ -772,29 +772,28 @@ function highlight(text,q){if(!q||!text)return escHtml(text||'');const esc=q.rep
 
 
 // ══════════════ 태그 자동완성 ══════════════
-function getAllUsedTags(){
+function getTagsByType(type){
   const set=new Set();
   books.forEach(b=>{
-    (b.sojaiTags||b.tags||[]).forEach(t=>set.add(t));
-    (b.relTags||b.themes||[]).forEach(t=>set.add(t));
-    const mlArr=Array.isArray(b.ml)?b.ml:(b.ml&&b.ml.name?[b.ml]:[]);
-    mlArr.forEach(m=>(m.typeTags||[]).forEach(t=>set.add(t)));
-    if(b.fl)(b.fl.typeTags||[]).forEach(t=>set.add(t));
-    if(b.flTypeTags)(b.flTypeTags).forEach(t=>set.add(t));
+    if(type==='sojai')(b.sojaiTags||b.tags||[]).forEach(t=>set.add(t));
+    else if(type==='rel')(b.relTags||b.themes||[]).forEach(t=>set.add(t));
+    else if(type==='ml'){const mlArr=Array.isArray(b.ml)?b.ml:(b.ml&&b.ml.name?[b.ml]:[]);mlArr.forEach(m=>(m.typeTags||[]).forEach(t=>set.add(t)));}
+    else if(type==='fl'){if(b.fl)(b.fl.typeTags||[]).forEach(t=>set.add(t));if(b.flTypeTags)b.flTypeTags.forEach(t=>set.add(t));}
+    else if(type==='genre')(b.genre||[]).forEach(t=>set.add(t));
   });
   return [...set].sort();
 }
 let _acDropdown=null,_acTarget=null;
-function showTagAC(inp,addFn){
+function showTagAC(inp,addFn,type){
   hideTagAC();
   const q=inp.value.trim().replace(/^#/,'');
-  if(!q){return;}
-  const all=getAllUsedTags();
+  if(!q)return;
+  const all=getTagsByType(type||'sojai');
   const matches=all.filter(t=>t.replace(/^#/,'').toLowerCase().includes(q.toLowerCase())).slice(0,8);
   if(!matches.length)return;
   const dd=document.createElement('div');
   dd.className='tag-autocomplete';
-  matches.forEach((tag,i)=>{
+  matches.forEach(tag=>{
     const item=document.createElement('div');
     item.className='tag-ac-item';
     item.textContent=tag;
@@ -848,7 +847,7 @@ function renderMlAcc(){
     const typeInput=document.createElement('input');typeInput.type='text';typeInput.placeholder='#연하남, #집착남 ...';
     const typeTagsWrap=document.createElement('div');typeTagsWrap.className='selected-tags';typeTagsWrap.id='mlTypeTags-'+m.id;
     const addFn=(function(mid,inp,wrap){return function(){let val=inp.value.trim();if(!val)return;if(!val.startsWith('#'))val='#'+val;const m=mlData.find(x=>x.id===mid);if(!m)return;if(!m.typeTags)m.typeTags=[];if(!m.typeTags.includes(val)){m.typeTags.push(val);_renderMlTypeTag(mid,val,wrap);}inp.value='';};})(m.id,typeInput,typeTagsWrap);
-    typeInput.oninput=function(){showTagAC(this,addFn);};typeInput.onblur=function(){setTimeout(hideTagAC,150);};typeInput.onkeydown=function(ev){if(ev.key==='Enter'){ev.preventDefault();addFn();hideTagAC();}};
+    typeInput.oninput=function(){showTagAC(this,addFn,'ml');};typeInput.onblur=function(){setTimeout(hideTagAC,150);};typeInput.onkeydown=function(ev){if(ev.key==='Enter'){ev.preventDefault();addFn();hideTagAC();}};
     const typeAddBtn=document.createElement('button');typeAddBtn.className='ctag-add-btn';typeAddBtn.textContent='+';typeAddBtn.onclick=addFn;
     typeInputRow.appendChild(typeInput);typeInputRow.appendChild(typeAddBtn);typeCtag.appendChild(typeInputRow);typeCtag.appendChild(typeTagsWrap);typeWrap.appendChild(typeCtag);
     (m.typeTags||[]).forEach(tag=>_renderMlTypeTag(m.id,tag,typeTagsWrap));
