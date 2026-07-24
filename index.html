@@ -46,9 +46,7 @@ body.dark mark.search-hl{background:#a07800;color:#fff8dd}
 .sb-완독{background:rgba(46,125,82,.15);color:var(--green);border:1px solid rgba(46,125,82,.3)}
 .sb-읽는중{background:rgba(176,106,0,.15);color:var(--amber);border:1px solid rgba(176,106,0,.3)}
 .sb-읽고싶어요{background:rgba(26,95,160,.15);color:var(--blue);border:1px solid rgba(26,95,160,.3)}
-.card-progress{height:3px;background:var(--bg3);margin-top:6px;border-radius:2px;overflow:hidden}
-.card-progress-fill{height:100%;background:var(--amber);border-radius:2px;transition:width .3s}
-.card-progress-text{font-size:10px;color:var(--txt4);margin-top:2px}
+
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(186px,1fr));gap:16px}
 .book-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s;position:relative}
 .book-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--line2)}
@@ -130,9 +128,7 @@ body.dark mark.search-hl{background:#a07800;color:#fff8dd}
 .status-selector{display:flex;gap:6px;flex-wrap:wrap}
 .st-opt{font-family:var(--font-body);font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:var(--white);color:var(--txt3);cursor:pointer;transition:all .15s}
 .st-opt:hover{border-color:var(--line2);color:var(--txt2)}.st-opt.sel-on{background:var(--acc);color:#fff;border-color:var(--acc)}
-.progress-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.progress-row input{width:68px;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-family:var(--font-body);font-size:13px;color:var(--txt)}
-.progress-row input:focus{outline:none;border-color:var(--acc2)}.progress-row span{font-size:13px;color:var(--txt3)}
+
 .mood-selector{display:flex;flex-wrap:wrap;gap:6px}
 .mood-opt{font-family:var(--font-body);font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--line);background:var(--white);cursor:pointer;transition:all .15s;color:var(--txt2)}
 .mood-opt:hover{border-color:var(--line2)}.mood-opt.mood-on{border-color:transparent}
@@ -441,10 +437,6 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
         <div class="cover-search-wrap">
           <div class="cover-search-row">
             <input type="text" id="coverSearchInput" placeholder="표지 자동검색">
-            <select id="coverSearchPlatform">
-              <option value="kakao">카카오</option>
-              <option value="ridi">리디</option>
-            </select>
             <button class="cover-search-btn" onclick="searchCover()">검색</button>
           </div>
           <div class="cover-search-results" id="coverSearchResults"></div>
@@ -518,14 +510,7 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
             <button class="st-opt" data-v="완독" onclick="setStatus('완독')">✅ 완독</button>
           </div>
         </div>
-        <div class="fg" id="progressWrap" style="display:none"><label>읽기 진행률</label>
-          <div class="progress-row">
-            <input type="number" id="f-prog-cur" placeholder="현재" min="0" oninput="updateProgressPreview()">
-            <span>/</span>
-            <input type="number" id="f-prog-total" placeholder="전체" min="1" oninput="updateProgressPreview()">
-            <span id="prog-pct-preview" style="font-size:12px;color:var(--txt3)"></span>
-          </div>
-        </div>
+
         <div class="sec-label" style="margin-top:2px">날짜</div>
         <div class="row3">
           <div class="fg"><label>구매일</label><input type="date" id="f-datebuy"></div>
@@ -866,11 +851,10 @@ function renderCard(b,q){
   const favBtn=`<button class="fav-btn${b.fav?' on':''}" onclick="event.stopPropagation();toggleFav('${b.id}')" title="즐겨찾기"><span class="fav-star">★</span></button>`;
   const titleHl=q?highlight(b.title,q):escHtml(b.title);
   const authorHl=q?highlight(b.author||'작가 미상',q):escHtml(b.author||'작가 미상');
-  let progressHtml='';
-  if(b.status==='읽는중'&&b.progTotal>0){const pct=Math.min(100,Math.round((b.progCur||0)/b.progTotal*100));progressHtml=`<div class="card-progress"><div class="card-progress-fill" style="width:${pct}%"></div></div><div class="card-progress-text">${b.progCur||0}/${b.progTotal} (${pct}%)</div>`;}
+
   const moodHtml=b.moods&&b.moods.length?`<div class="mood-card-tag">${MOOD_OPTIONS.find(m=>m.label===b.moods[0])?.emoji||''} ${b.moods[0]}</div>`:'';
   const cover=b.cover?`<div class="card-cover"><img src="${b.cover}" alt="">${dot}${sb}${favBtn}</div>`:`<div class="card-cover"><div class="card-cover-ph" style="background:${hexToRgba(g.color,.06)}"><span class="ph-icon" style="color:${g.color};opacity:.3">📖</span><span class="ph-title">${escHtml(b.title)}</span></div>${dot}${sb}${favBtn}</div>`;
-  return`<div class="book-card" draggable="true" data-id="${b.id}" onclick="openDetail('${b.id}')" ondragstart="onDragStart(event,'${b.id}')" ondragover="onDragOver(event)" ondrop="onDrop(event,'${b.id}')" ondragleave="onDragLeave(event)" ondragend="onDragEnd(event)">${cover}<div class="card-body"><div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><div class="card-title" style="flex:1;margin-bottom:0">${titleHl}</div>${ageBadge}</div><div class="card-author">${authorHl}</div><div class="card-stars">${stars(b.rating||0)}</div>${progressHtml}<div class="card-tags">${tags}</div>${moodHtml}</div></div>`;
+  return`<div class="book-card" draggable="true" data-id="${b.id}" onclick="openDetail('${b.id}')" ondragstart="onDragStart(event,'${b.id}')" ondragover="onDragOver(event)" ondrop="onDrop(event,'${b.id}')" ondragleave="onDragLeave(event)" ondragend="onDragEnd(event)">${cover}<div class="card-body"><div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><div class="card-title" style="flex:1;margin-bottom:0">${titleHl}</div>${ageBadge}</div><div class="card-author">${authorHl}</div><div class="card-stars">${stars(b.rating||0)}</div><div class="card-tags">${tags}</div>${moodHtml}</div></div>`;
 }
 function render(){
   document.getElementById('bookChip').textContent=books.length+'권';updateLogo();
@@ -903,7 +887,6 @@ function onDrop(e,targetId){
 // ══════════════ 표지 검색 ══════════════
 async function searchCover(){
   const q=document.getElementById('coverSearchInput')?.value.trim();
-  const platform=document.getElementById('coverSearchPlatform')?.value;
   const resultsEl=document.getElementById('coverSearchResults');
   if(!q){showToast('검색어를 입력해주세요.');return;}
   resultsEl.innerHTML='<span class="cover-search-msg">검색 중...</span>';
@@ -912,7 +895,6 @@ async function searchCover(){
     const items=await searchGoogleBooks(q);
     if(!items.length){resultsEl.innerHTML='<span class="cover-search-msg">결과가 없어요. 다른 검색어를 시도해보세요.</span>';return;}
     resultsEl.innerHTML='';
-    const platformLabel=platform==='kakao'?'카카오':'리디';
     items.forEach(item=>{
       if(!item.thumb)return;
       const div=document.createElement('div');div.className='cover-search-item';
@@ -927,7 +909,7 @@ async function searchCover(){
       };
       resultsEl.appendChild(div);
     });
-    if(!resultsEl.children.length)resultsEl.innerHTML=`<span class="cover-search-msg">이미지가 없어요. (<a href="https://search.${platform==='kakao'?'kakao':'ridibooks'}.com/?q=${encodeURIComponent(q)}" target="_blank" style="color:var(--acc)">${platformLabel}에서 직접 검색</a>)</span>`;
+    if(!resultsEl.children.length)resultsEl.innerHTML='<span class="cover-search-msg">이미지가 없어요. URL을 직접 입력해보세요.</span>';
   }catch(e){console.error(e);resultsEl.innerHTML='<span class="cover-search-msg">검색 중 오류가 발생했어요.</span>';}
 }
 async function searchGoogleBooks(q){
@@ -1052,23 +1034,22 @@ function openEdit(id){
   document.getElementById('f-platform').value=b.platform||'';const pue=document.getElementById('f-platformurl');if(pue)pue.value=b.platformurl||'';
   rereadData=(b.rereads||[]).map(r=>({...r}));renderRereadList();
   document.getElementById('f-price').value=b.price||'';document.getElementById('f-datebuy').value=b.datebuy||'';document.getElementById('f-datestart').value=b.datestart||'';document.getElementById('f-dateend').value=b.dateend||'';
-  const pce=document.getElementById('f-prog-cur'),pte=document.getElementById('f-prog-total');if(pce)pce.value=b.progCur||'';if(pte)pte.value=b.progTotal||'';
+
   currentGenreTags=Array.isArray(b.genre)?[...b.genre]:(b.genre?[b.genre]:[]);renderGenreTags();
   document.getElementById('coverBox').innerHTML=currentCover?`<img src="${currentCover}" alt="">`:'<div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>';
-  updateStarUI();updateStatusUI();renderExcerpts();updateProgressUI();
+  updateStarUI();updateStatusUI();renderExcerpts();
   document.getElementById('editOv').classList.add('open');
 }
-function clearForm(){['f-title','f-author','f-summary','f-review','f-platform','f-platformurl','f-price','f-datebuy','f-datestart','f-dateend','f-fl-name','f-fl-age','f-fl-intro','f-prog-cur','f-prog-total'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const sp=document.getElementById('prog-pct-preview');if(sp)sp.textContent='';rereadData=[];renderRereadList();currentGenreTags=[];renderGenreTags();mlData=[];renderMlAcc();document.getElementById('f-booktype').value='';document.getElementById('f-agerating').value='';document.getElementById('coverBox').innerHTML='<div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>';currentCtagsSojai=[];currentCtagsRel=[];currentFlTypeTags=[];renderTagsSojai();renderTagsRel();renderFlTypeTags();updateStarUI();const csr=document.getElementById('coverSearchResults');if(csr)csr.innerHTML='';const cui=document.getElementById('coverUrlInput');if(cui)cui.value='';}
+function clearForm(){['f-title','f-author','f-summary','f-review','f-platform','f-platformurl','f-price','f-datebuy','f-datestart','f-dateend','f-fl-name','f-fl-age','f-fl-intro'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});rereadData=[];renderRereadList();currentGenreTags=[];renderGenreTags();mlData=[];renderMlAcc();document.getElementById('f-booktype').value='';document.getElementById('f-agerating').value='';document.getElementById('coverBox').innerHTML='<div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>';currentCtagsSojai=[];currentCtagsRel=[];currentFlTypeTags=[];renderTagsSojai();renderTagsRel();renderFlTypeTags();updateStarUI();const csr=document.getElementById('coverSearchResults');if(csr)csr.innerHTML='';const cui=document.getElementById('coverUrlInput');if(cui)cui.value='';}
 function closeEdit(){document.getElementById('editOv').classList.remove('open');}
 function handleCover(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{currentCover=ev.target.result;document.getElementById('coverBox').innerHTML=`<img src="${currentCover}" alt="">`;};reader.readAsDataURL(file);e.target.value='';}
 function removeCover(){currentCover=null;document.getElementById('coverBox').innerHTML='<div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>';}
 function setStar(n){currentStar=n;updateStarUI();}
 function updateStarUI(){document.querySelectorAll('.sr-btn').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.v)<=currentStar));const lbl=document.getElementById('starLabel');if(lbl)lbl.textContent=currentStar?STAR_LABELS[currentStar]:'';}
 // BUG FIX: 완독 전환 시 dateend 자동 제안
-function setStatus(v){if(v==='완독'&&currentStatusVal!=='완독'){const de=document.getElementById('f-dateend');if(de&&!de.value){const t=new Date().toISOString().slice(0,10);de.value=t;showToast('완독일을 오늘('+t+')로 자동 입력했어요.');}}currentStatusVal=v;updateStatusUI();updateProgressUI();}
+function setStatus(v){if(v==='완독'&&currentStatusVal!=='완독'){const de=document.getElementById('f-dateend');if(de&&!de.value){const t=new Date().toISOString().slice(0,10);de.value=t;showToast('완독일을 오늘('+t+')로 자동 입력했어요.');}}currentStatusVal=v;updateStatusUI();}
 function updateStatusUI(){document.querySelectorAll('.st-opt').forEach(b=>b.classList.toggle('sel-on',b.dataset.v===currentStatusVal));}
-function updateProgressUI(){const wrap=document.getElementById('progressWrap');if(wrap)wrap.style.display=currentStatusVal==='읽는중'?'block':'none';}
-function updateProgressPreview(){const cur=parseFloat(document.getElementById('f-prog-cur')?.value)||0,total=parseFloat(document.getElementById('f-prog-total')?.value)||0;const sp=document.getElementById('prog-pct-preview');if(sp)sp.textContent=total>0?`${Math.min(100,Math.round(cur/total*100))}%`:'';;}
+
 function addExcerpt(){excerptsData.push({id:uid(),text:'',location:'',reason:'',open:true});renderExcerpts();}
 function removeExcerpt(id){excerptsData=excerptsData.filter(e=>e.id!==id);renderExcerpts();}
 function toggleExcerpt(id){const e=excerptsData.find(x=>x.id===id);if(e)e.open=!e.open;renderExcerpts();}
@@ -1078,7 +1059,7 @@ function saveBook(){
   const title=document.getElementById('f-title').value.trim();if(!title){showToast('제목을 입력해주세요.');return;}
   const genreArr=currentGenreTags.map(t=>t.trim()).filter(Boolean);
   const clean=excerptsData.filter(e=>e.text.trim()).map(({id,text,location,reason})=>({id,text:text.trim(),location:location.trim(),reason:reason.trim()}));
-  const bookData={id:editId||uid(),title,author:document.getElementById('f-author').value.trim(),genre:genreArr,booktype:document.getElementById('f-booktype').value,agerating:document.getElementById('f-agerating').value,platform:document.getElementById('f-platform').value.trim(),platformurl:document.getElementById('f-platformurl')?.value.trim()||'',rereads:rereadData.map(r=>({...r})),price:Number(document.getElementById('f-price').value)||0,status:currentStatusVal,sojaiTags:[...currentCtagsSojai],relTags:[...currentCtagsRel],flTypeTags:[...currentFlTypeTags],moods:[...currentMoods],rating:currentStar,summary:document.getElementById('f-summary').value.trim(),review:document.getElementById('f-review').value.trim(),excerpts:clean,cover:currentCover,progCur:Number(document.getElementById('f-prog-cur')?.value)||0,progTotal:Number(document.getElementById('f-prog-total')?.value)||0,ml:mlData.filter(m=>m.name||m.age||(m.typeTags&&m.typeTags.length)||m.intro).map(m=>({name:m.name||'',age:m.age||'',typeTags:m.typeTags||[],intro:m.intro||'',sub:!!m.sub})),fl:{name:document.getElementById('f-fl-name').value.trim(),age:document.getElementById('f-fl-age').value.trim(),typeTags:[...currentFlTypeTags],intro:document.getElementById('f-fl-intro')?.value.trim()||''},datebuy:document.getElementById('f-datebuy').value,datestart:document.getElementById('f-datestart').value,dateend:document.getElementById('f-dateend').value,updatedAt:new Date().toISOString()};
+  const bookData={id:editId||uid(),title,author:document.getElementById('f-author').value.trim(),genre:genreArr,booktype:document.getElementById('f-booktype').value,agerating:document.getElementById('f-agerating').value,platform:document.getElementById('f-platform').value.trim(),platformurl:document.getElementById('f-platformurl')?.value.trim()||'',rereads:rereadData.map(r=>({...r})),price:Number(document.getElementById('f-price').value)||0,status:currentStatusVal,sojaiTags:[...currentCtagsSojai],relTags:[...currentCtagsRel],flTypeTags:[...currentFlTypeTags],moods:[...currentMoods],rating:currentStar,summary:document.getElementById('f-summary').value.trim(),review:document.getElementById('f-review').value.trim(),excerpts:clean,cover:currentCover,ml:mlData.filter(m=>m.name||m.age||(m.typeTags&&m.typeTags.length)||m.intro).map(m=>({name:m.name||'',age:m.age||'',typeTags:m.typeTags||[],intro:m.intro||'',sub:!!m.sub})),fl:{name:document.getElementById('f-fl-name').value.trim(),age:document.getElementById('f-fl-age').value.trim(),typeTags:[...currentFlTypeTags],intro:document.getElementById('f-fl-intro')?.value.trim()||''},datebuy:document.getElementById('f-datebuy').value,datestart:document.getElementById('f-datestart').value,dateend:document.getElementById('f-dateend').value,updatedAt:new Date().toISOString()};
   if(editId){const idx=books.findIndex(b=>b.id===editId);bookData.createdAt=books[idx].createdAt||bookData.updatedAt;bookData.fav=books[idx].fav||false;books[idx]=bookData;}else{bookData.createdAt=bookData.updatedAt;books.unshift(bookData);}
   saveData().then(()=>{render();closeEdit();showToast(editId?'수정되었어요!':'책이 추가되었어요!');});
 }
