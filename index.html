@@ -175,6 +175,9 @@ body.dark mark.search-hl{background:#a07800;color:#fff8dd}
 .det-title{font-family:var(--font-display);font-size:24px;line-height:1.25;color:var(--txt)}
 .det-author{font-size:13px;color:var(--txt3)}
 .det-stars{display:flex;gap:3px}.det-stars .s{font-size:14px}
+.det-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:2px}
+.mchip{font-size:11px;padding:3px 8px;border-radius:4px;background:var(--bg2);border:1px solid var(--line);color:var(--txt2)}
+.det-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
 .det-dates{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--txt3)}
 .det-date-item{display:flex;align-items:center;gap:4px}
 .det-actions{display:flex;gap:8px;margin-top:auto;padding-top:8px;flex-wrap:wrap}
@@ -205,7 +208,7 @@ body.dark mark.search-hl{background:#a07800;color:#fff8dd}
 .age-전체{background:#e8f5e9;color:#2e7d52;border:1px solid rgba(46,125,82,.25)}
 .age-15세{background:#fff3e0;color:#b06a00;border:1px solid rgba(176,106,0,.25)}
 .age-19세{background:#fde8e8;color:#b04040;border:1px solid rgba(176,64,64,.25)}
-.ctag-detail{font-size:12px;color:var(--rose);background:var(--rose-bg);padding:3px 10px;border-radius:14px;border:1px solid rgba(155,79,106,.2)}
+.ctag-detail{font-size:12px;color:var(--rose);background:var(--rose-bg);padding:2px 7px;border-radius:4px;border:1px solid rgba(155,79,106,.18)}
 .ctag-click{cursor:pointer;transition:background .12s,color .12s}.ctag-click:hover{background:var(--rose);color:#fff}
 .reread-list{display:flex;flex-direction:column;gap:6px}
 .reread-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:13px;flex-wrap:wrap}
@@ -1041,7 +1044,7 @@ function openDetail(id){
   const moodHtml=(b.moods&&b.moods.length)?b.moods.map(m=>{const mo=MOOD_OPTIONS.find(x=>x.label===m);return mo?`<span class="mood-tag" style="background:${mo.bg};color:${mo.color};border-color:${mo.color+'40'}">${mo.emoji} ${m}</span>`:''}).join(''):'';
   const tagHtml=allTags.map(t=>`<span class="ctag-detail ctag-click" onclick="closeDetail();setTimeout(()=>searchByTag('${t.replace(/'/g,"\\'")}'),50)">${escHtml(t)}</span>`).join('');
   const genreBadges=(b.genre||[]).map(gn=>{const gi=getGenre(gn);return`<span class="det-genre-badge" style="background:${hexToRgba(gi.color,.13)};color:${gi.color}">${escHtml(gi.name)}</span>`;}).join('');
-  document.getElementById('detailTop').innerHTML=`<div class="det-cover">${coverHtml}</div><div class="det-info"><div class="det-badge-row">${genreBadges}<span class="det-status-badge" style="${statusStyle}">${sbl}</span>${ageBadge}${b.booktype?`<span class="det-type-badge" style="background:var(--bg2);color:var(--txt3)">${escHtml(b.booktype)}</span>`:''}</div><div class="det-title">${escHtml(b.title)}</div><div class="det-author">${escHtml(b.author||'작가 미상')}</div>${b.rating?`<div class="det-stars">${stars(b.rating)}</div>`:''}<div class="det-meta">${metaChips}</div>${moodHtml?`<div style="display:flex;flex-wrap:wrap;gap:5px">${moodHtml}</div>`:''}<div class="det-tags">${tagHtml}</div>${dateHtml?`<div class="det-dates">${dateHtml}</div>`:''}<div class="det-actions"><button class="btn" onclick="openEdit('${b.id}');closeDetail()">✏️ 수정</button><button class="btn" onclick="openShare('${b.id}');closeDetail()">💌 추천 카드</button>${b.fav?`<button class="btn" onclick="toggleFav('${b.id}');openDetail('${b.id}')" style="color:#c8a000">⭐ 즐겨찾기</button>`:`<button class="btn" onclick="toggleFav('${b.id}');openDetail('${b.id}')">☆ 즐겨찾기</button>`}</div></div>`;
+  document.getElementById('detailTop').innerHTML=`<div class="det-cover">${coverHtml}</div><div class="det-info"><div class="det-badge-row">${genreBadges}<span class="det-status-badge" style="${statusStyle}">${sbl}</span>${ageBadge}</div><div class="det-title">${escHtml(b.title)}</div><div class="det-author">${escHtml(b.author||'작가 미상')}</div>${b.rating?`<div class="det-stars">${stars(b.rating)}</div>`:''}<div class="det-meta">${metaChips}</div>${moodHtml?`<div style="display:flex;flex-wrap:wrap;gap:5px">${moodHtml}</div>`:''}<div class="det-tags">${tagHtml}</div>${dateHtml?`<div class="det-dates">${dateHtml}</div>`:''}<div class="det-actions"><button class="btn" onclick="openEdit('${b.id}');closeDetail()">✏️ 수정</button><button class="btn" onclick="openShare('${b.id}');closeDetail()">💌 추천 카드</button>${b.fav?`<button class="btn" onclick="toggleFav('${b.id}');openDetail('${b.id}')" style="color:#c8a000">⭐ 즐겨찾기</button>`:`<button class="btn" onclick="toggleFav('${b.id}');openDetail('${b.id}')">☆ 즐겨찾기</button>`}</div></div>`;
   // CONTENT
   let contentHtml='';
   // 남주/여주
