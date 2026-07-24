@@ -164,10 +164,10 @@ body.dark mark.search-hl{background:#a07800;color:#fff8dd}
 .add-genre-row input:focus{outline:none;border-color:var(--acc2)}.add-genre-row input::placeholder{color:var(--txt4)}
 .color-picker{width:34px;height:34px;border-radius:7px;cursor:pointer;padding:2px;background:var(--bg);border:1px solid var(--line)}
 .detail-modal{max-width:860px;max-height:90vh;display:flex;flex-direction:column}
-.detail-top{display:grid;grid-template-columns:170px 1fr;flex-shrink:0;border-bottom:1px solid var(--line)}
-.det-cover{background:var(--bg2);border-right:1px solid var(--line)}
-.det-cover img{width:100%;height:100%;object-fit:cover;display:block}
-.det-cover-ph{width:100%;min-height:220px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--txt4);padding:20px}
+.detail-top{display:grid;grid-template-columns:200px 1fr;flex-shrink:0;border-bottom:1px solid var(--line)}
+.det-cover{background:var(--bg2);border-right:1px solid var(--line);min-height:300px}
+.det-cover img{width:100%;height:100%;object-fit:cover;display:block;min-height:300px}
+.det-cover-ph{width:100%;min-height:300px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--txt4);padding:20px}
 .det-cover-ph .ico{font-size:32px;opacity:.3}
 .det-info{padding:20px;display:flex;flex-direction:column;gap:8px}
 .det-badge-row{display:flex;gap:6px;flex-wrap:wrap}
@@ -316,6 +316,20 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
 @media(max-width:600px){header{padding:0 12px;gap:8px;height:52px}.logo{font-size:16px}.book-chip{display:none}.hbtn{padding:6px 10px;font-size:12px}.main{padding:14px}.toolbar-row{gap:6px}.search-wrap{width:160px;flex:0 0 160px}.ov{padding:0;align-items:flex-end}.modal{border-radius:16px 16px 0 0;max-height:92vh;animation:slideUpSheet .2s}.detail-modal{max-height:92vh}}
 @keyframes slideUpSheet{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 @media(max-width:700px){.form-grid{grid-template-columns:1fr}.detail-top{grid-template-columns:1fr}.row2,.row3{grid-template-columns:1fr}.cal-wrap{grid-template-columns:1fr}.stats-top-grid{grid-template-columns:repeat(2,1fr)}.lead-detail-grid{grid-template-columns:1fr}}
+
+/* ── 통계 탭 ── */
+.stats-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.stats-tab{font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;border-radius:7px;padding:7px 16px;border:1px solid var(--line);background:var(--white);color:var(--txt3);transition:all .15s}
+.stats-tab:hover{background:var(--bg2);color:var(--txt2)}
+.stats-tab.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+.stats-panel{display:none}.stats-panel.active{display:block}
+/* ── 완독 배지 ── */
+.card-reread-badge{position:absolute;top:8px;left:8px;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;background:rgba(44,82,130,.85);color:#fff;backdrop-filter:blur(3px);z-index:3}
+/* ── 태그 자동완성 드롭다운 ── */
+.tag-autocomplete{position:absolute;left:0;right:0;top:100%;background:var(--white);border:1px solid var(--line2);border-radius:7px;box-shadow:var(--shadow-md);z-index:300;max-height:160px;overflow-y:auto;margin-top:2px}
+.tag-ac-item{padding:7px 12px;font-size:12px;color:var(--txt2);cursor:pointer;transition:background .1s}
+.tag-ac-item:hover,.tag-ac-item.focused{background:var(--acc-bg);color:var(--acc)}
+.ctag-input-row{position:relative}
 </style>
 
 <body>
@@ -364,7 +378,16 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
     </div>
     <div class="grid" id="bookGrid"></div>
   </div>
-  <div class="page" id="page-stats"><div id="statsContent"></div></div>
+  <div class="page" id="page-stats">
+  <div class="stats-tabs">
+    <button class="stats-tab active" onclick="switchStatsTab('overview',this)">📊 개요</button>
+    <button class="stats-tab" onclick="switchStatsTab('chart',this)">📈 차트</button>
+    <button class="stats-tab" onclick="switchStatsTab('tags',this)">🏷 태그</button>
+    <button class="stats-tab" onclick="switchStatsTab('char',this)">💙 캐릭터</button>
+    <button class="stats-tab" onclick="switchStatsTab('mood',this)">💭 감정</button>
+  </div>
+  <div id="statsContent"></div>
+</div>
   <div class="page" id="page-calendar">
     <div class="cal-nav">
       <button class="cal-nav-btn" onclick="calPrevMonth()">◀</button>
@@ -457,13 +480,13 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
         </div>
         <div class="fg"><label>소재 태그</label>
           <div class="ctag-wrap">
-            <div class="ctag-input-row"><input type="text" id="ctagInputSojai" placeholder="#계약결혼, #환생 ..." onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFromInputSojai();}"><button class="ctag-add-btn" onclick="addCtagFromInputSojai()">+</button></div>
+            <div class="ctag-input-row"><input type="text" id="ctagInputSojai" placeholder="#계약결혼, #환생 ..." oninput="showTagAC(this,addCtagFromInputSojai)" onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFromInputSojai();hideTagAC();}" onblur="setTimeout(hideTagAC,150)"><button class="ctag-add-btn" onclick="addCtagFromInputSojai()">+</button></div>
             <div class="selected-tags" id="selectedTagsSojai"></div>
           </div>
         </div>
         <div class="fg"><label>관계 태그</label>
           <div class="ctag-wrap">
-            <div class="ctag-input-row"><input type="text" id="ctagInputRel" placeholder="#소꿉친구, #집착남 ..." onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFromInputRel();}"><button class="ctag-add-btn" onclick="addCtagFromInputRel()">+</button></div>
+            <div class="ctag-input-row"><input type="text" id="ctagInputRel" placeholder="#소꿉친구, #집착남 ..." oninput="showTagAC(this,addCtagFromInputRel)" onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFromInputRel();hideTagAC();}" onblur="setTimeout(hideTagAC,150)"><button class="ctag-add-btn" onclick="addCtagFromInputRel()">+</button></div>
             <div class="selected-tags" id="selectedTagsRel"></div>
           </div>
         </div>
@@ -481,7 +504,7 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
             </div>
             <div class="fg"><label>유형 태그</label>
               <div class="ctag-wrap">
-                <div class="ctag-input-row"><input type="text" id="ctagInputFlType" placeholder="#츤데레녀, #악녀 ..." onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFlType();}"><button class="ctag-add-btn" onclick="addCtagFlType()">+</button></div>
+                <div class="ctag-input-row"><input type="text" id="ctagInputFlType" placeholder="#츤데레녀, #악녀 ..." oninput="showTagAC(this,addCtagFlType)" onkeydown="if(event.key==='Enter'){event.preventDefault();addCtagFlType();hideTagAC();}" onblur="setTimeout(hideTagAC,150)"><button class="ctag-add-btn" onclick="addCtagFlType()">+</button></div>
                 <div class="selected-tags" id="selectedFlTypeTags"></div>
               </div>
             </div>
@@ -515,6 +538,7 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
         </div>
         <div class="fg"><label>줄거리</label><textarea id="f-summary" placeholder="간략한 줄거리..." rows="3"></textarea></div>
         <div class="fg"><label>총평</label><textarea id="f-review" placeholder="읽고 난 감상..." rows="3"></textarea></div>
+        <div class="fg"><label>메모 <span style="font-size:10px;color:var(--txt4);font-weight:400">(스포일러, 개인 메모 등)</span></label><textarea id="f-memo" placeholder="스포일러나 개인 메모..." rows="2"></textarea></div>
         <div class="sec-label" style="margin-top:2px">재독 기록</div>
         <div class="reread-list" id="rereadList"></div>
         <button class="add-reread-btn" onclick="addReread()">＋ 회독 추가</button>
@@ -746,6 +770,42 @@ function daysBetween(a,b){if(!a||!b)return null;const diff=new Date(b)-new Date(
 function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function highlight(text,q){if(!q||!text)return escHtml(text||'');const esc=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return escHtml(text).replace(new RegExp(esc,'gi'),m=>`<mark class="search-hl">${escHtml(m)}</mark>`);}
 
+
+// ══════════════ 태그 자동완성 ══════════════
+function getAllUsedTags(){
+  const set=new Set();
+  books.forEach(b=>{
+    (b.sojaiTags||b.tags||[]).forEach(t=>set.add(t));
+    (b.relTags||b.themes||[]).forEach(t=>set.add(t));
+    const mlArr=Array.isArray(b.ml)?b.ml:(b.ml&&b.ml.name?[b.ml]:[]);
+    mlArr.forEach(m=>(m.typeTags||[]).forEach(t=>set.add(t)));
+    if(b.fl)(b.fl.typeTags||[]).forEach(t=>set.add(t));
+    if(b.flTypeTags)(b.flTypeTags).forEach(t=>set.add(t));
+  });
+  return [...set].sort();
+}
+let _acDropdown=null,_acTarget=null;
+function showTagAC(inp,addFn){
+  hideTagAC();
+  const q=inp.value.trim().replace(/^#/,'');
+  if(!q){return;}
+  const all=getAllUsedTags();
+  const matches=all.filter(t=>t.replace(/^#/,'').toLowerCase().includes(q.toLowerCase())).slice(0,8);
+  if(!matches.length)return;
+  const dd=document.createElement('div');
+  dd.className='tag-autocomplete';
+  matches.forEach((tag,i)=>{
+    const item=document.createElement('div');
+    item.className='tag-ac-item';
+    item.textContent=tag;
+    item.onmousedown=e=>{e.preventDefault();inp.value=tag.replace(/^#/,'');hideTagAC();addFn();};
+    dd.appendChild(item);
+  });
+  inp.parentNode.appendChild(dd);
+  _acDropdown=dd;_acTarget=inp;
+}
+function hideTagAC(){if(_acDropdown){_acDropdown.remove();_acDropdown=null;_acTarget=null;}}
+document.addEventListener('click',e=>{if(_acDropdown&&!_acDropdown.contains(e.target)&&e.target!==_acTarget)hideTagAC();});
 // ══════════════ 태그 헬퍼 ══════════════
 function _renderTagsToWrap(arr,wrapId,removeFn){const wrap=document.getElementById(wrapId);if(!wrap)return;wrap.innerHTML='';arr.forEach(tag=>{const span=document.createElement('span');span.className='stag';const txt=document.createTextNode(tag+' ');const del=document.createElement('button');del.className='stag-del';del.textContent='✕';del.onclick=(t=>()=>removeFn(t))(tag);span.appendChild(txt);span.appendChild(del);wrap.appendChild(span);});}
 function renderTagsSojai(){_renderTagsToWrap(currentCtagsSojai,'selectedTagsSojai',t=>{currentCtagsSojai=currentCtagsSojai.filter(x=>x!==t);renderTagsSojai();});}
@@ -788,7 +848,7 @@ function renderMlAcc(){
     const typeInput=document.createElement('input');typeInput.type='text';typeInput.placeholder='#연하남, #집착남 ...';
     const typeTagsWrap=document.createElement('div');typeTagsWrap.className='selected-tags';typeTagsWrap.id='mlTypeTags-'+m.id;
     const addFn=(function(mid,inp,wrap){return function(){let val=inp.value.trim();if(!val)return;if(!val.startsWith('#'))val='#'+val;const m=mlData.find(x=>x.id===mid);if(!m)return;if(!m.typeTags)m.typeTags=[];if(!m.typeTags.includes(val)){m.typeTags.push(val);_renderMlTypeTag(mid,val,wrap);}inp.value='';};})(m.id,typeInput,typeTagsWrap);
-    typeInput.onkeydown=function(ev){if(ev.key==='Enter'){ev.preventDefault();addFn();}};
+    typeInput.oninput=function(){showTagAC(this,addFn);};typeInput.onblur=function(){setTimeout(hideTagAC,150);};typeInput.onkeydown=function(ev){if(ev.key==='Enter'){ev.preventDefault();addFn();hideTagAC();}};
     const typeAddBtn=document.createElement('button');typeAddBtn.className='ctag-add-btn';typeAddBtn.textContent='+';typeAddBtn.onclick=addFn;
     typeInputRow.appendChild(typeInput);typeInputRow.appendChild(typeAddBtn);typeCtag.appendChild(typeInputRow);typeCtag.appendChild(typeTagsWrap);typeWrap.appendChild(typeCtag);
     (m.typeTags||[]).forEach(tag=>_renderMlTypeTag(m.id,tag,typeTagsWrap));
@@ -837,7 +897,8 @@ function renderCard(b,q){
   const authorHl=q?highlight(b.author||'작가 미상',q):escHtml(b.author||'작가 미상');
 
   const moodHtml=b.moods&&b.moods.length?`<div class="mood-card-tag">${MOOD_OPTIONS.find(m=>m.label===b.moods[0])?.emoji||''} ${b.moods[0]}</div>`:'';
-  const cover=b.cover?`<div class="card-cover"><img src="${b.cover}" alt="">${dot}${sb}${favBtn}</div>`:`<div class="card-cover"><div class="card-cover-ph" style="background:${hexToRgba(g.color,.06)}"><span class="ph-icon" style="color:${g.color};opacity:.3">📖</span><span class="ph-title">${escHtml(b.title)}</span></div>${dot}${sb}${favBtn}</div>`;
+  const rereadBadge=(b.rereads&&b.rereads.length)?`<span class="card-reread-badge">🔄 ${b.rereads.length}회독</span>`:'';
+  const cover=b.cover?`<div class="card-cover"><img src="${b.cover}" alt="">${dot}${sb}${rereadBadge}${favBtn}</div>`:`<div class="card-cover"><div class="card-cover-ph" style="background:${hexToRgba(g.color,.06)}"><span class="ph-icon" style="color:${g.color};opacity:.3">📖</span><span class="ph-title">${escHtml(b.title)}</span></div>${dot}${sb}${rereadBadge}${favBtn}</div>`;
   return`<div class="book-card" draggable="true" data-id="${b.id}" onclick="openDetail('${b.id}')" ondragstart="onDragStart(event,'${b.id}')" ondragover="onDragOver(event)" ondrop="onDrop(event,'${b.id}')" ondragleave="onDragLeave(event)" ondragend="onDragEnd(event)">${cover}<div class="card-body"><div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><div class="card-title" style="flex:1;margin-bottom:0">${titleHl}</div>${ageBadge}</div><div class="card-author">${authorHl}</div><div class="card-stars">${stars(b.rating||0)}</div><div class="card-tags">${tags}</div>${moodHtml}</div></div>`;
 }
 function render(){
@@ -872,6 +933,8 @@ function onDrop(e,targetId){
 function applyCoverUrl(){const inp=document.getElementById('coverUrlInput');if(!inp)return;const url=inp.value.trim();if(!url){showToast('URL을 입력해주세요.');return;}currentCover=url;document.getElementById('coverBox').innerHTML=`<img src="${currentCover}" alt="" onerror="this.parentNode.innerHTML='<div class=\\'cover-hint\\'><span class=\\'ci\\'>⚠️</span>이미지를 불러올 수 없어요</div>'">`;inp.value='';showToast('표지 URL이 적용됐어요!');}
 
 // ══════════════ STATS ══════════════
+let _currentStatsTab='overview';
+function switchStatsTab(id,el){_currentStatsTab=id;document.querySelectorAll('.stats-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderStats();}
 function renderStats(){
   const el=document.getElementById('statsContent');
   if(!books.length){el.innerHTML='<div style="text-align:center;padding:60px 0;color:var(--txt3)"><div style="font-size:40px;opacity:.2">📊</div><p style="margin-top:8px">책을 추가하면 통계가 보여요!</p></div>';return;}
@@ -901,28 +964,46 @@ function renderStats(){
   const moodMap={};books.forEach(b=>(b.moods||[]).forEach(m=>{moodMap[m]=(moodMap[m]||0)+1;}));
   const moodEntries=Object.entries(moodMap).sort((a,b)=>b[1]-a[1]),maxMood=moodEntries[0]?.[1]||1;
   const moodBars=moodEntries.map(([label,cnt])=>{const m=MOOD_OPTIONS.find(x=>x.label===label);return`<div class="bar-row"><span class="bar-label" style="color:${m?.color||'var(--txt2)'}">${m?.emoji||''} ${escHtml(label)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxMood*100)}%;background:${m?.color||'var(--acc)'}"></div></div><span class="bar-count">${cnt}</span></div>`;}).join('')||'<p style="font-size:12px;color:var(--txt4)">감정 태그 데이터 없음</p>';
-  el.innerHTML=`
-    <div class="stats-top-grid">
-      <div class="stat-card"><div class="stat-label">전체</div><div class="stat-value">${books.length}</div><div class="stat-sub">권</div></div>
-      <div class="stat-card"><div class="stat-label">완독</div><div class="stat-value" style="color:var(--green)">${done}</div><div class="stat-sub">권 읽었어요</div></div>
-      <div class="stat-card"><div class="stat-label">읽는 중</div><div class="stat-value" style="color:var(--amber)">${reading}</div><div class="stat-sub">권</div></div>
-      <div class="stat-card"><div class="stat-label">읽고 싶어요</div><div class="stat-value" style="color:var(--blue)">${wish}</div><div class="stat-sub">권 대기 중</div></div>
-      <div class="stat-card"><div class="stat-label">평균 별점</div><div class="stat-value">${avg}</div><div class="stat-sub">${rated.length}권 기준</div></div>
-      <div class="stat-card"><div class="stat-label">총 소비 금액</div><div class="stat-value" style="font-size:${totalPrice>=100000?'20px':'28px'}">${totalPrice?totalPrice.toLocaleString('ko-KR'):'-'}</div><div class="stat-sub">${totalPrice?'원':'금액 미입력'}</div></div>
-      <div class="stat-card"><div class="stat-label">평균 독서 시간</div><div class="stat-value">${avgDays||'-'}</div><div class="stat-sub">${avgDays?'일 / '+daysArr.length+'권 기준':'날짜 미입력'}</div></div>
-    </div>
-    <div class="stats-section"><h3>📅 연간 완독 히트맵 <span style="font-size:13px;color:var(--txt4);font-family:var(--font-body)">${year}년</span></h3>${buildHeatmap()}</div>
-    <div class="stats-section"><h3>월별 구매 현황 <span style="font-size:13px;color:var(--txt4);font-family:var(--font-body)">${year}년</span></h3><div class="monthly-chart">${monthBars}</div><div style="display:flex;gap:6px;padding:0 4px;margin-top:4px">${MN.map(m=>`<div style="flex:1;font-size:10px;color:var(--txt4);text-align:center">${m}</div>`).join('')}</div></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
-      <div class="stats-section"><h3>장르 분포</h3>${genreBars}</div>
-      <div class="stats-section"><h3>별점 분포</h3>${starBars}</div>
-      <div class="stats-section"><h3>구매 플랫폼</h3>${platBars}</div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:4px">
-      <div class="stats-section"><h3>💙 남주 유형 Top 10</h3>${mlTypeBars}</div>
-      <div class="stats-section"><h3>🩷 여주 유형 Top 10</h3>${flTypeBars}</div>
-    </div>
-    <div class="stats-section"><h3>💭 감정 태그 분포</h3>${moodBars}</div>`;
+  // ── 소재/관계 태그 Top 10 ──
+  const sojai={},rel={};
+  books.forEach(b=>{(b.sojaiTags||b.tags||[]).forEach(t=>{sojai[t]=(sojai[t]||0)+1;});(b.relTags||b.themes||[]).forEach(t=>{rel[t]=(rel[t]||0)+1;});});
+  const sojai10=Object.entries(sojai).sort((a,b)=>b[1]-a[1]).slice(0,10),maxS=sojai10[0]?.[1]||1;
+  const rel10=Object.entries(rel).sort((a,b)=>b[1]-a[1]).slice(0,10),maxR=rel10[0]?.[1]||1;
+  const sojaBars=sojai10.map(([t,c])=>`<div class="bar-row"><span class="bar-label">${escHtml(t)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxS*100)}%;background:var(--rose)"></div></div><span class="bar-count">${c}</span></div>`).join('')||'<p style="font-size:12px;color:var(--txt4)">소재 태그 없음</p>';
+  const relBars=rel10.map(([t,c])=>`<div class="bar-row"><span class="bar-label">${escHtml(t)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxR*100)}%;background:var(--green)"></div></div><span class="bar-count">${c}</span></div>`).join('')||'<p style="font-size:12px;color:var(--txt4)">관계 태그 없음</p>';
+
+  const panels={
+    overview:`
+      <div class="stats-top-grid">
+        <div class="stat-card"><div class="stat-label">전체</div><div class="stat-value">${books.length}</div><div class="stat-sub">권</div></div>
+        <div class="stat-card"><div class="stat-label">완독</div><div class="stat-value" style="color:var(--green)">${done}</div><div class="stat-sub">권 읽었어요</div></div>
+        <div class="stat-card"><div class="stat-label">읽는 중</div><div class="stat-value" style="color:var(--amber)">${reading}</div><div class="stat-sub">권</div></div>
+        <div class="stat-card"><div class="stat-label">읽고 싶어요</div><div class="stat-value" style="color:var(--blue)">${wish}</div><div class="stat-sub">권 대기 중</div></div>
+        <div class="stat-card"><div class="stat-label">평균 별점</div><div class="stat-value">${avg}</div><div class="stat-sub">${rated.length}권 기준</div></div>
+        <div class="stat-card"><div class="stat-label">총 소비 금액</div><div class="stat-value" style="font-size:${totalPrice>=100000?'20px':'28px'}">${totalPrice?totalPrice.toLocaleString('ko-KR'):'-'}</div><div class="stat-sub">${totalPrice?'원':'금액 미입력'}</div></div>
+        <div class="stat-card"><div class="stat-label">평균 독서 시간</div><div class="stat-value">${avgDays||'-'}</div><div class="stat-sub">${avgDays?'일 / '+daysArr.length+'권 기준':'날짜 미입력'}</div></div>
+      </div>
+      <div class="stats-section"><h3>📅 연간 완독 히트맵 <span style="font-size:13px;color:var(--txt4);font-family:var(--font-body)">${year}년</span></h3>${buildHeatmap()}</div>`,
+    chart:`
+      <div class="stats-section"><h3>월별 구매 현황 <span style="font-size:13px;color:var(--txt4);font-family:var(--font-body)">${year}년</span></h3><div class="monthly-chart">${monthBars}</div><div style="display:flex;gap:6px;padding:0 4px;margin-top:4px">${MN.map(m=>`<div style="flex:1;font-size:10px;color:var(--txt4);text-align:center">${m}</div>`).join('')}</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+        <div class="stats-section"><h3>장르 분포</h3>${genreBars}</div>
+        <div class="stats-section"><h3>별점 분포</h3>${starBars}</div>
+        <div class="stats-section"><h3>구매 플랫폼</h3>${platBars}</div>
+      </div>`,
+    tags:`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="stats-section"><h3>🔖 소재 태그 Top 10</h3>${sojaBars}</div>
+        <div class="stats-section"><h3>💞 관계 태그 Top 10</h3>${relBars}</div>
+      </div>`,
+    char:`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="stats-section"><h3>💙 남주 유형 Top 10</h3>${mlTypeBars}</div>
+        <div class="stats-section"><h3>🩷 여주 유형 Top 10</h3>${flTypeBars}</div>
+      </div>`,
+    mood:`<div class="stats-section"><h3>💭 감정 태그 분포</h3>${moodBars}</div>`
+  };
+  el.innerHTML=panels[_currentStatsTab]||panels.overview;
 }
 
 // ══════════════ 히트맵 ══════════════
@@ -972,7 +1053,7 @@ function showCalTip(e,text){const tip=document.getElementById('calTooltip');tip.
 function hideCalTip(){document.getElementById('calTooltip').style.display='none';}
 
 // ══════════════ EDIT MODAL ══════════════
-function openAdd(){editId=null;currentCover=null;currentStar=0;currentStatusVal='완독';excerptsData=[];currentCtagsSojai=[];currentCtagsRel=[];currentFlTypeTags=[];currentGenreTags=[];currentMoods=[];mlData=[];rereadData=[];document.getElementById('editModalTitle').textContent='책 추가';document.getElementById('delBtn').style.display='none';clearForm();renderExcerpts();updateStatusUI();renderTagsSojai();renderTagsRel();renderFlTypeTags();renderMoodSelector();renderGenreTags();document.getElementById('editOv').classList.add('open');}
+function openAdd(){editId=null;currentCover=null;currentStar=0;currentStatusVal='읽고싶어요';excerptsData=[];currentCtagsSojai=[];currentCtagsRel=[];currentFlTypeTags=[];currentGenreTags=[];currentMoods=[];mlData=[];rereadData=[];document.getElementById('editModalTitle').textContent='책 추가';document.getElementById('delBtn').style.display='none';clearForm();renderExcerpts();updateStatusUI();renderTagsSojai();renderTagsRel();renderFlTypeTags();renderMoodSelector();renderGenreTags();document.getElementById('editOv').classList.add('open');}
 function openEdit(id){
   const b=books.find(x=>x.id===id);if(!b)return;
   editId=id;currentStar=b.rating||0;currentCover=b.cover||null;currentStatusVal=b.status||'완독';excerptsData=(b.excerpts||[]).map(e=>({...e,open:false}));currentMoods=b.moods?[...b.moods]:[];
@@ -982,7 +1063,7 @@ function openEdit(id){
   renderTagsSojai();renderTagsRel();renderFlTypeTags();renderMoodSelector();
   mlData=Array.isArray(b.ml)?b.ml.map(m=>({...m,typeTags:m.typeTags||[],open:false})):(b.ml&&b.ml.name?[{...b.ml,typeTags:[],open:false}]:[]);renderMlAcc();
   const fl=b.fl||{};document.getElementById('f-fl-name').value=fl.name||'';document.getElementById('f-fl-age').value=fl.age||'';const fliEl=document.getElementById('f-fl-intro');if(fliEl)fliEl.value=fl.intro||'';
-  document.getElementById('f-summary').value=b.summary||'';document.getElementById('f-review').value=b.review||'';document.getElementById('f-booktype').value=b.booktype||'';document.getElementById('f-agerating').value=b.agerating||'';
+  document.getElementById('f-summary').value=b.summary||'';document.getElementById('f-review').value=b.review||'';const memoEl=document.getElementById('f-memo');if(memoEl)memoEl.value=b.memo||'';document.getElementById('f-booktype').value=b.booktype||'';document.getElementById('f-agerating').value=b.agerating||'';
   document.getElementById('f-platform').value=b.platform||'';const pue=document.getElementById('f-platformurl');if(pue)pue.value=b.platformurl||'';
   rereadData=(b.rereads||[]).map(r=>({...r}));renderRereadList();
   document.getElementById('f-price').value=b.price||'';document.getElementById('f-datebuy').value=b.datebuy||'';document.getElementById('f-datestart').value=b.datestart||'';document.getElementById('f-dateend').value=b.dateend||'';
@@ -992,7 +1073,7 @@ function openEdit(id){
   updateStarUI();updateStatusUI();renderExcerpts();
   document.getElementById('editOv').classList.add('open');
 }
-function clearForm(){['f-title','f-author','f-summary','f-review','f-platform','f-platformurl','f-price','f-datebuy','f-datestart','f-dateend','f-fl-name','f-fl-age','f-fl-intro'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});rereadData=[];renderRereadList();currentGenreTags=[];renderGenreTags();mlData=[];renderMlAcc();document.getElementById('f-booktype').value='';document.getElementById('f-agerating').value='';document.getElementById('coverBox').innerHTML='<div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>';currentCtagsSojai=[];currentCtagsRel=[];currentFlTypeTags=[];renderTagsSojai();renderTagsRel();renderFlTypeTags();updateStarUI();}
+function clearForm(){['f-title','f-author','f-summary','f-review','f-memo','f-platform','f-platformurl','f-price','f-datebuy','f-datestart','f-dateend','f-fl-name','f-fl-age','f-fl-intro'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});rereadData=[];renderRereadList();currentGenreTags=[];renderGenreTags();mlData=[];renderMlAcc();document.getElementById('f-booktype').value='';document.getElementById('f-agerating').value='';document.getElementById('coverBox').innerHTML='<div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>';currentCtagsSojai=[];currentCtagsRel=[];currentFlTypeTags=[];renderTagsSojai();renderTagsRel();renderFlTypeTags();updateStarUI();}
 function closeEdit(){document.getElementById('editOv').classList.remove('open');}
 function handleCover(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{currentCover=ev.target.result;document.getElementById('coverBox').innerHTML=`<img src="${currentCover}" alt="">`;};reader.readAsDataURL(file);e.target.value='';}
 function removeCover(){currentCover=null;document.getElementById('coverBox').innerHTML='<div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>';}
@@ -1011,7 +1092,7 @@ function saveBook(){
   const title=document.getElementById('f-title').value.trim();if(!title){showToast('제목을 입력해주세요.');return;}
   const genreArr=currentGenreTags.map(t=>t.trim()).filter(Boolean);
   const clean=excerptsData.filter(e=>e.text.trim()).map(({id,text,location,reason})=>({id,text:text.trim(),location:location.trim(),reason:reason.trim()}));
-  const bookData={id:editId||uid(),title,author:document.getElementById('f-author').value.trim(),genre:genreArr,booktype:document.getElementById('f-booktype').value,agerating:document.getElementById('f-agerating').value,platform:document.getElementById('f-platform').value.trim(),platformurl:document.getElementById('f-platformurl')?.value.trim()||'',rereads:rereadData.map(r=>({...r})),price:Number(document.getElementById('f-price').value)||0,status:currentStatusVal,sojaiTags:[...currentCtagsSojai],relTags:[...currentCtagsRel],flTypeTags:[...currentFlTypeTags],moods:[...currentMoods],rating:currentStar,summary:document.getElementById('f-summary').value.trim(),review:document.getElementById('f-review').value.trim(),excerpts:clean,cover:currentCover,ml:mlData.filter(m=>m.name||m.age||(m.typeTags&&m.typeTags.length)||m.intro).map(m=>({name:m.name||'',age:m.age||'',typeTags:m.typeTags||[],intro:m.intro||'',sub:!!m.sub})),fl:{name:document.getElementById('f-fl-name').value.trim(),age:document.getElementById('f-fl-age').value.trim(),typeTags:[...currentFlTypeTags],intro:document.getElementById('f-fl-intro')?.value.trim()||''},datebuy:document.getElementById('f-datebuy').value,datestart:document.getElementById('f-datestart').value,dateend:document.getElementById('f-dateend').value,updatedAt:new Date().toISOString()};
+  const bookData={id:editId||uid(),title,author:document.getElementById('f-author').value.trim(),genre:genreArr,booktype:document.getElementById('f-booktype').value,agerating:document.getElementById('f-agerating').value,platform:document.getElementById('f-platform').value.trim(),platformurl:document.getElementById('f-platformurl')?.value.trim()||'',rereads:rereadData.map(r=>({...r})),price:Number(document.getElementById('f-price').value)||0,status:currentStatusVal,sojaiTags:[...currentCtagsSojai],relTags:[...currentCtagsRel],flTypeTags:[...currentFlTypeTags],moods:[...currentMoods],rating:currentStar,summary:document.getElementById('f-summary').value.trim(),review:document.getElementById('f-review').value.trim(),memo:document.getElementById('f-memo')?.value.trim()||'',excerpts:clean,cover:currentCover,ml:mlData.filter(m=>m.name||m.age||(m.typeTags&&m.typeTags.length)||m.intro).map(m=>({name:m.name||'',age:m.age||'',typeTags:m.typeTags||[],intro:m.intro||'',sub:!!m.sub})),fl:{name:document.getElementById('f-fl-name').value.trim(),age:document.getElementById('f-fl-age').value.trim(),typeTags:[...currentFlTypeTags],intro:document.getElementById('f-fl-intro')?.value.trim()||''},datebuy:document.getElementById('f-datebuy').value,datestart:document.getElementById('f-datestart').value,dateend:document.getElementById('f-dateend').value,updatedAt:new Date().toISOString()};
   if(editId){const idx=books.findIndex(b=>b.id===editId);bookData.createdAt=books[idx].createdAt||bookData.updatedAt;bookData.fav=books[idx].fav||false;books[idx]=bookData;}else{bookData.createdAt=bookData.updatedAt;books.unshift(bookData);}
   saveData().then(()=>{render();closeEdit();showToast(editId?'수정되었어요!':'책이 추가되었어요!');});
 }
@@ -1060,6 +1141,7 @@ function openDetail(id){
   // 줄거리/총평 (주인공 다음)
   if(b.summary)contentHtml+=`<div class="det-section"><h3>줄거리</h3><p style="white-space:pre-wrap">${escHtml(b.summary)}</p></div>`;
   if(b.review)contentHtml+=`<div class="det-section"><h3>총평</h3><p style="white-space:pre-wrap">${escHtml(b.review)}</p></div>`;
+  if(b.memo)contentHtml+=`<div class="det-section"><h3>📝 메모 <span style="font-size:10px;color:var(--txt4);font-weight:400">(비공개)</span></h3><p style="white-space:pre-wrap;background:var(--amber-bg);border:1px solid rgba(176,106,0,.15);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--txt2);line-height:1.8">${escHtml(b.memo)}</p></div>`;
   // 발췌
   if(b.excerpts&&b.excerpts.length){const excHtml=b.excerpts.map((e,i)=>`<div class="exc-quote-block"><div class="exc-quote-head" onclick="this.nextElementSibling.classList.toggle('open')"><span class="exc-q-label">발췌 ${i+1}</span><span class="exc-q-preview">${escHtml(e.text.slice(0,50))}${e.text.length>50?'…':''}</span></div><div class="exc-quote-body"><div class="exc-q-loc">${e.location?'📍 '+escHtml(e.location):''}</div><div class="exc-q-text">${escHtml(e.text)}</div>${e.reason?`<div class="exc-q-reason">💭 ${escHtml(e.reason)}</div>`:''}</div></div>`).join('');contentHtml+=`<div class="det-section"><h3>발췌</h3>${excHtml}</div>`;}
   // 재독 기록
