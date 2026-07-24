@@ -90,7 +90,7 @@ body.dark mark.search-hl{background:#a07800;color:#fff8dd}
 .btn-x{background:none;border:none;cursor:pointer;color:var(--txt3);width:30px;height:30px;border-radius:6px;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .12s}
 .btn-x:hover{background:var(--bg2);color:var(--txt)}
 .modal-body{padding:20px;overflow-y:auto;flex:1}.modal-foot{padding:12px 20px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px}
-.form-grid{display:grid;grid-template-columns:160px 1fr;gap:20px}
+.form-grid{display:grid;grid-template-columns:220px 1fr;gap:24px}
 .fl-col{display:flex;flex-direction:column;gap:10px}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg label{font-size:11px;font-weight:600;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase}
@@ -105,14 +105,14 @@ body.dark mark.search-hl{background:#a07800;color:#fff8dd}
 .cover-hint{text-align:center;color:var(--txt4);font-size:12px;line-height:1.6;padding:10px;pointer-events:none}
 .cover-hint .ci{font-size:22px;display:block;margin-bottom:4px;opacity:.4}
 .cover-acts{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
-.cover-url-row{display:flex;gap:5px;margin-top:4px}
-.cover-url-row input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-family:var(--font-body);font-size:12px;color:var(--txt)}
+.cover-url-row{display:flex;gap:5px;margin-top:4px;width:100%;min-width:0}
+.cover-url-row input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-family:var(--font-body);font-size:12px;color:var(--txt)}
 .cover-url-row input:focus{outline:none;border-color:var(--acc2)}.cover-url-row input::placeholder{color:var(--txt4)}
 .cover-url-btn{font-family:var(--font-body);font-size:12px;padding:5px 10px;border-radius:7px;border:1px solid var(--line);background:var(--white);color:var(--txt2);cursor:pointer;white-space:nowrap;transition:background .12s}
 .cover-url-btn:hover{background:var(--bg2)}
-.cover-search-wrap{display:flex;flex-direction:column;gap:5px;margin-top:5px}
-.cover-search-row{display:flex;gap:4px}
-.cover-search-row input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:5px 7px;font-family:var(--font-body);font-size:11px;color:var(--txt)}
+.cover-search-wrap{display:flex;flex-direction:column;gap:5px;margin-top:5px;width:100%;min-width:0}
+.cover-search-row{display:flex;gap:4px;width:100%;min-width:0}
+.cover-search-row input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:5px 7px;font-family:var(--font-body);font-size:11px;color:var(--txt)}
 .cover-search-row input:focus{outline:none;border-color:var(--acc2)}
 .cover-search-row select{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:5px 6px;font-family:var(--font-body);font-size:11px;color:var(--txt);cursor:pointer}
 .cover-search-btn{font-family:var(--font-body);font-size:11px;padding:5px 8px;border-radius:7px;border:1px solid var(--line);background:var(--white);color:var(--txt2);cursor:pointer;white-space:nowrap;transition:background .12s}
@@ -417,11 +417,11 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
 
 <!-- EDIT MODAL -->
 <div class="ov" id="editOv" onclick="ovClick(event,'editOv',closeEdit)">
-<div class="modal" style="max-width:840px;max-height:92vh">
+<div class="modal" style="max-width:1000px;max-height:92vh">
   <div class="modal-head"><h2 id="editModalTitle">책 추가</h2><button class="btn-x" onclick="closeEdit()">✕</button></div>
   <div class="modal-body">
     <div class="form-grid">
-      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px">
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;overflow:hidden;width:100%">
         <div class="cover-box" id="coverBox" onclick="document.getElementById('coverFileInput').click()">
           <div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>
         </div>
