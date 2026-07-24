@@ -110,17 +110,6 @@ body.dark mark.search-hl{background:#a07800;color:#fff8dd}
 .cover-url-row input:focus{outline:none;border-color:var(--acc2)}.cover-url-row input::placeholder{color:var(--txt4)}
 .cover-url-btn{font-family:var(--font-body);font-size:12px;padding:5px 10px;border-radius:7px;border:1px solid var(--line);background:var(--white);color:var(--txt2);cursor:pointer;white-space:nowrap;transition:background .12s}
 .cover-url-btn:hover{background:var(--bg2)}
-.cover-search-wrap{display:flex;flex-direction:column;gap:5px;margin-top:5px;width:100%;min-width:0}
-.cover-search-row{display:flex;gap:4px;width:100%;min-width:0}
-.cover-search-row input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:5px 7px;font-family:var(--font-body);font-size:11px;color:var(--txt)}
-.cover-search-row input:focus{outline:none;border-color:var(--acc2)}
-.cover-search-row select{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:5px 6px;font-family:var(--font-body);font-size:11px;color:var(--txt);cursor:pointer}
-.cover-search-btn{font-family:var(--font-body);font-size:11px;padding:5px 8px;border-radius:7px;border:1px solid var(--line);background:var(--white);color:var(--txt2);cursor:pointer;white-space:nowrap;transition:background .12s}
-.cover-search-btn:hover{background:var(--bg2)}
-.cover-search-results{display:flex;flex-wrap:wrap;gap:5px;max-height:120px;overflow-y:auto;padding:3px 0}
-.cover-search-item{width:44px;cursor:pointer;border-radius:4px;overflow:hidden;border:2px solid transparent;transition:border-color .12s;flex-shrink:0}
-.cover-search-item:hover{border-color:var(--acc2)}.cover-search-item.sel{border-color:var(--acc)}
-.cover-search-item img{width:100%;display:block}.cover-search-msg{font-size:11px;color:var(--txt4);padding:3px 0}
 .star-row{display:flex;gap:5px;align-items:center}
 .sr-btn{background:none;border:none;cursor:pointer;font-size:20px;color:var(--line2);padding:0;line-height:1;transition:color .1s,transform .1s}
 .sr-btn:hover,.sr-btn.on{color:#e8a020}.sr-btn.on{transform:scale(1.05)}
@@ -434,13 +423,6 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
           <input type="url" id="coverUrlInput" placeholder="이미지 URL">
           <button class="cover-url-btn" onclick="applyCoverUrl()">적용</button>
         </div>
-        <div class="cover-search-wrap">
-          <div class="cover-search-row">
-            <input type="text" id="coverSearchInput" placeholder="표지 자동검색">
-            <button class="cover-search-btn" onclick="searchCover()">검색</button>
-          </div>
-          <div class="cover-search-results" id="coverSearchResults"></div>
-        </div>
       </div>
       <div class="fl-col">
         <div class="sec-label">기본 정보</div>
@@ -658,7 +640,7 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
         <div class="hla-item">
           <div class="hla-head" onclick="toggleHla(this)">
             <span class="help-log-ver">v1.7</span>
-            <span class="hla-summary">버그수정 + UX개선 + 히트맵 + 감정태그 + 비슷한 책 + 표지 자동검색</span>
+            <span class="hla-summary">버그수정 + UX개선 + 히트맵 + 감정태그 + 비슷한 책</span>
             <span class="hla-arrow">▶</span>
           </div>
           <div class="hla-body">
@@ -675,7 +657,6 @@ body.dark .heatmap-cell.lv1{background:#1a4030}body.dark .heatmap-cell.lv2{backg
               <li>신규: 연간 완독 히트맵 (통계 탭 — GitHub 잔디 스타일)</li>
               <li>신규: 감정 태그 8종 (독후감 무드 선택 + 통계 분포)</li>
               <li>신규: 비슷한 책 추천 (장르·태그 기반 스코어링, 상세보기 하단)</li>
-              <li>신규: 표지 자동 검색 (카카오/리디 선택 → Google Books API 결과)</li>
               <li>신규: 읽는 중 진행률 입력 (화수/페이지 게이지 표시)</li>
             </ul>
           </div>
@@ -885,38 +866,6 @@ function onDrop(e,targetId){
 }
 
 // ══════════════ 표지 검색 ══════════════
-async function searchCover(){
-  const q=document.getElementById('coverSearchInput')?.value.trim();
-  const resultsEl=document.getElementById('coverSearchResults');
-  if(!q){showToast('검색어를 입력해주세요.');return;}
-  resultsEl.innerHTML='<span class="cover-search-msg">검색 중...</span>';
-  try{
-    // 카카오/리디 CORS 불가 → Google Books API(무인증, 한국어 필터) 사용
-    const items=await searchGoogleBooks(q);
-    if(!items.length){resultsEl.innerHTML='<span class="cover-search-msg">결과가 없어요. 다른 검색어를 시도해보세요.</span>';return;}
-    resultsEl.innerHTML='';
-    items.forEach(item=>{
-      if(!item.thumb)return;
-      const div=document.createElement('div');div.className='cover-search-item';
-      const img=document.createElement('img');img.src=item.thumb;img.alt=item.title;img.title=item.title;img.onerror=()=>div.remove();
-      div.appendChild(img);
-      div.onclick=()=>{
-        document.querySelectorAll('.cover-search-item').forEach(d=>d.classList.remove('sel'));div.classList.add('sel');
-        const testImg=new Image();testImg.crossOrigin='anonymous';
-        testImg.onload=()=>{const c=document.createElement('canvas');c.width=testImg.naturalWidth;c.height=testImg.naturalHeight;c.getContext('2d').drawImage(testImg,0,0);try{currentCover=c.toDataURL('image/jpeg',.92);document.getElementById('coverBox').innerHTML=`<img src="${currentCover}" alt="">`;showToast('표지가 적용됐어요!');}catch(e){currentCover=item.thumb;document.getElementById('coverBox').innerHTML=`<img src="${currentCover}" alt="">`;showToast('표지 URL이 적용됐어요!');}}; 
-        testImg.onerror=()=>{currentCover=item.thumb;document.getElementById('coverBox').innerHTML=`<img src="${currentCover}" alt="">`;showToast('표지가 적용됐어요!');};
-        testImg.src=item.thumb;
-      };
-      resultsEl.appendChild(div);
-    });
-    if(!resultsEl.children.length)resultsEl.innerHTML='<span class="cover-search-msg">이미지가 없어요. URL을 직접 입력해보세요.</span>';
-  }catch(e){console.error(e);resultsEl.innerHTML='<span class="cover-search-msg">검색 중 오류가 발생했어요.</span>';}
-}
-async function searchGoogleBooks(q){
-  const res=await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&langRestrict=ko&maxResults=12`);
-  if(!res.ok)return[];const data=await res.json();
-  return(data.items||[]).map(item=>{const vi=item.volumeInfo||{};const thumb=vi.imageLinks?(vi.imageLinks.large||vi.imageLinks.thumbnail||'').replace('http:','https:'):'';return{title:vi.title||'',thumb};}).filter(i=>i.thumb);
-}
 function applyCoverUrl(){const inp=document.getElementById('coverUrlInput');if(!inp)return;const url=inp.value.trim();if(!url){showToast('URL을 입력해주세요.');return;}currentCover=url;document.getElementById('coverBox').innerHTML=`<img src="${currentCover}" alt="" onerror="this.parentNode.innerHTML='<div class=\\'cover-hint\\'><span class=\\'ci\\'>⚠️</span>이미지를 불러올 수 없어요</div>'">`;inp.value='';showToast('표지 URL이 적용됐어요!');}
 
 // ══════════════ STATS ══════════════
@@ -1040,7 +989,7 @@ function openEdit(id){
   updateStarUI();updateStatusUI();renderExcerpts();
   document.getElementById('editOv').classList.add('open');
 }
-function clearForm(){['f-title','f-author','f-summary','f-review','f-platform','f-platformurl','f-price','f-datebuy','f-datestart','f-dateend','f-fl-name','f-fl-age','f-fl-intro'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});rereadData=[];renderRereadList();currentGenreTags=[];renderGenreTags();mlData=[];renderMlAcc();document.getElementById('f-booktype').value='';document.getElementById('f-agerating').value='';document.getElementById('coverBox').innerHTML='<div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>';currentCtagsSojai=[];currentCtagsRel=[];currentFlTypeTags=[];renderTagsSojai();renderTagsRel();renderFlTypeTags();updateStarUI();const csr=document.getElementById('coverSearchResults');if(csr)csr.innerHTML='';const cui=document.getElementById('coverUrlInput');if(cui)cui.value='';}
+function clearForm(){['f-title','f-author','f-summary','f-review','f-platform','f-platformurl','f-price','f-datebuy','f-datestart','f-dateend','f-fl-name','f-fl-age','f-fl-intro'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});rereadData=[];renderRereadList();currentGenreTags=[];renderGenreTags();mlData=[];renderMlAcc();document.getElementById('f-booktype').value='';document.getElementById('f-agerating').value='';document.getElementById('coverBox').innerHTML='<div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>';currentCtagsSojai=[];currentCtagsRel=[];currentFlTypeTags=[];renderTagsSojai();renderTagsRel();renderFlTypeTags();updateStarUI();}
 function closeEdit(){document.getElementById('editOv').classList.remove('open');}
 function handleCover(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{currentCover=ev.target.result;document.getElementById('coverBox').innerHTML=`<img src="${currentCover}" alt="">`;};reader.readAsDataURL(file);e.target.value='';}
 function removeCover(){currentCover=null;document.getElementById('coverBox').innerHTML='<div class="cover-hint"><span class="ci">🖼️</span>클릭하여<br>표지 업로드</div>';}
@@ -1095,8 +1044,6 @@ function openDetail(id){
   document.getElementById('detailTop').innerHTML=`<div class="det-cover">${coverHtml}</div><div class="det-info"><div class="det-badge-row">${genreBadges}<span class="det-status-badge" style="${statusStyle}">${sbl}</span>${ageBadge}${b.booktype?`<span class="det-type-badge" style="background:var(--bg2);color:var(--txt3)">${escHtml(b.booktype)}</span>`:''}</div><div class="det-title">${escHtml(b.title)}</div><div class="det-author">${escHtml(b.author||'작가 미상')}</div>${b.rating?`<div class="det-stars">${stars(b.rating)}</div>`:''}<div class="det-meta">${metaChips}</div>${moodHtml?`<div style="display:flex;flex-wrap:wrap;gap:5px">${moodHtml}</div>`:''}<div class="det-tags">${tagHtml}</div>${dateHtml?`<div class="det-dates">${dateHtml}</div>`:''}<div class="det-actions"><button class="btn" onclick="openEdit('${b.id}');closeDetail()">✏️ 수정</button><button class="btn" onclick="openShare('${b.id}');closeDetail()">💌 추천 카드</button>${b.fav?`<button class="btn" onclick="toggleFav('${b.id}');openDetail('${b.id}')" style="color:#c8a000">⭐ 즐겨찾기</button>`:`<button class="btn" onclick="toggleFav('${b.id}');openDetail('${b.id}')">☆ 즐겨찾기</button>`}</div></div>`;
   // CONTENT
   let contentHtml='';
-  if(b.summary)contentHtml+=`<div class="det-section"><h3>줄거리</h3><p>${escHtml(b.summary)}</p></div>`;
-  if(b.review)contentHtml+=`<div class="det-section"><h3>총평</h3><p>${escHtml(b.review)}</p></div>`;
   // 남주/여주
   const mlArr=Array.isArray(b.ml)?b.ml:(b.ml&&b.ml.name?[b.ml]:[]);
   const mainMl=mlArr.filter(m=>!m.sub),subMl=mlArr.filter(m=>m.sub);
@@ -1107,6 +1054,9 @@ function openDetail(id){
     const subMlHtml=subMl.length?`<div class="lead-sub-section"><div class="lead-sub-title">🩵 서브남</div>${subMl.map(m=>`<div class="lead-sub-acc"><div class="lead-sub-head" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.lead-sub-arrow').classList.toggle('open')"><span class="lead-sub-arrow">▶</span><span style="font-size:12px;font-weight:600;color:var(--acc2)">${escHtml(m.name||'이름 미입력')}</span>${m.age?`<span style="font-size:11px;color:var(--txt4);">${escHtml(m.age)}</span>`:''}</div><div class="lead-sub-body">${m.typeTags&&m.typeTags.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${m.typeTags.map(t=>`<span class="ctag-detail" style="font-size:11px">${escHtml(t)}</span>`).join('')}</div>`:''}${m.intro?`<p style="font-size:12px;color:var(--txt2);line-height:1.7">${escHtml(m.intro)}</p>`:''}</div></div>`).join('')}</div>`:'';
     contentHtml+=`<div class="det-section"><h3>주인공 정보</h3><div class="lead-detail-grid">${mlCards}${flCard}</div>${subMlHtml}</div>`;
   }
+  // 줄거리/총평 (주인공 다음)
+  if(b.summary)contentHtml+=`<div class="det-section"><h3>줄거리</h3><p style="white-space:pre-wrap">${escHtml(b.summary)}</p></div>`;
+  if(b.review)contentHtml+=`<div class="det-section"><h3>총평</h3><p style="white-space:pre-wrap">${escHtml(b.review)}</p></div>`;
   // 발췌
   if(b.excerpts&&b.excerpts.length){const excHtml=b.excerpts.map((e,i)=>`<div class="exc-quote-block"><div class="exc-quote-head" onclick="this.nextElementSibling.classList.toggle('open')"><span class="exc-q-label">발췌 ${i+1}</span><span class="exc-q-preview">${escHtml(e.text.slice(0,50))}${e.text.length>50?'…':''}</span></div><div class="exc-quote-body"><div class="exc-q-loc">${e.location?'📍 '+escHtml(e.location):''}</div><div class="exc-q-text">${escHtml(e.text)}</div>${e.reason?`<div class="exc-q-reason">💭 ${escHtml(e.reason)}</div>`:''}</div></div>`).join('');contentHtml+=`<div class="det-section"><h3>발췌</h3>${excHtml}</div>`;}
   // 재독 기록
